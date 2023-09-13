@@ -1,6 +1,7 @@
 package com.demo1.demo1.service;
 
 import com.demo1.demo1.domain.Term;
+import com.demo1.demo1.domain.TermDtl;
 import com.demo1.demo1.repository.JdbcTermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,14 @@ public class TermService {
     public Term findOne(int no) {
         return jdbcTermRepository.findOne(no);
     }
+
+    public TermDtl findConts(int no, String lang) {
+        return jdbcTermRepository.findConts(no , lang);
+    }
+
+    public List<Term> Search(Term term) {
+        return jdbcTermRepository.search(term);
+    }
+
 
 }

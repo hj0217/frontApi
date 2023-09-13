@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title> 계약서 리스트</title>
@@ -18,9 +18,10 @@
 </head>
 <body>
 <div class="container">
-    <div class="first-line">
-        <div>
-            <scan id="type-option">약관유형</scan>
+    <form method="post" th:action="@{'/search'}">
+        <div class="first-line">
+            <div>
+                <span id="type-option">약관유형</span>
                 <select id="type" name="type">
                     <option disabled selected value="">----- 전체 -----</option>
                     <option value="이용약관">이용약관</option>
@@ -28,36 +29,43 @@
                     <option value="회원가입 동의">회원가입 동의</option>
                     <option value="주문동의">주문동의</option>
                 </select>
+            </div>
+
+            <div>
+                <span id="yn-option">필수여부</span>
+                <input type="checkbox" role="switch" id="yn" name="yn" value="필수"/>
+            </div>
+
+            <div>
+                <span id="period-option">기간검색</span>
+                <label for="period"></label><select id="period" name="period">
+                    <option  selected value="전시 시작일">전시 시작일</option>
+                    <option value="등록일">등록일</option>
+                    <option value="수정일">수정일</option>
+                </select>
+                <label for="openToEnd"></label><input class="box" type="text" id="openToEnd" autocomplete="off" name="openToEnd" value="" />
+            </div>
+
+
+            <div class="float-center">
+                <div>
+                    <button type="submit">검색</button>
+                    <button type="reset">초기화</button>
+                </div>
+            </div>
         </div>
-
-        <div>
-            <scan id="yn-option">필수여부</scan>
-            <input type="checkbox" role="switch" id="yn" name="yn" value="필수"/>
-        </div>
-
-        <div>
-            <scan id="period-option">기간검색</scan>
-            <select id="period" name="period">
-                <option  selected value="전시 시작일">전시 시작일</option>
-                <option value="등록일">등록일</option>
-                <option value="수정일">수정일</option>
-            </select>
-            <input class="box" type="text" id="openToEnd" autocomplete="off" name="openToEnd" value="" />
-        </div>
-    </div>
+    </form>
 
 
-    <div>
-
-        총<scan th:text="${terms.size()}"></scan>건
+        총<span th:text="${terms.size()}"></span>건
         <select id="showqty" name="qty">
             <option  selected value="30개씩 보기">30개씩 보기</option>
             <option value="50개씩 보기">50개씩 보기</option>
             <option value="100개씩 보기">100개씩 보기</option>
         </select>
-            <button>등록</button>
-        </a>
-        <table>
+
+        <a th:href="@{'/register'}"><button>등록</button></a>
+        <table class="table table-hover">
             <thead>
             <tr>
                 <th>번호</th>
@@ -74,9 +82,7 @@
             <tbody>
             <tr th:each="term: ${terms}">
                 <td th:text="${term.no}"></td>
-                <td>
-                    <a th:text="${term.type}" th:href="'http://localhost:8080/detail/'+${term.no} + '?page=0'"></a>
-                </td>
+                <td><a th:text="${term.type}" th:href="@{'/detail/'+ ${term.no} + '?page=0'}"></a></td>
                 <td th:text="${term.yn}"></td>
                 <td th:text="${term.startDate}"></td>
                 <td th:text="${term.endDate}"></td>
@@ -87,8 +93,7 @@
             </tr>
             </tbody>
         </table>
-    </div>
-</div> <!-- end of container -->
+    </div><!-- end of container -->
 
 <script type="text/javascript" src="/js/common/jquery-cal.js"></script>
 

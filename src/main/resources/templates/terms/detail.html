@@ -5,48 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>약관 등록</title>
-    <!--style Sheet-->
+
+    <!--common.css / JQuery /daterangepicker / bootstrap-->
     <link href="/css/common.css" rel="stylesheet">
-    <!--네이버 스마트에디터2.0-->
-    <script type="text/javascript" src="/smartEditor/js/service/HuskyEZCreator.js" charset="utf-8"></script>
-    <!--달력-->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <input type="hidden" id="hiddenNo" th:value="${pageStatus.equals('oldPage') ? ${term.getNo()}: '' }"></input>
-    <h2 class="head" th:text="${pageStatus.equals('oldPage') ? '약관보기': '약관등록' }"></h2>
-    <!-- <h2 class="head" th:unless="${not #strings.isEmpty(pageStatus)}">약관 보기</h2>-->
-    <form method="post" action="/registerForm">
+    <input type="hidden" id="hiddenNo" th:value="${term != null ? term.no: 0 }"/>
+
+
+    <h2 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h2>
+<!--    <form name="term" id="term" method="post" th:action="@{'/terms/register'}" onsubmit="return check()">-->
+        <form name="form" id="form" method="post" onsubmit="return check()">
+
         <div class="first-line">
             <div>
                 <span class="option">약관유형</span>
                 <label for="type"></label>
-                <select id="type" name="type">
-                    <option value="" th:selected="${pageStatus.equals('newPage')}">----- 전체 -----</option>
-                    <option value="이용약관" th:selected="${pageStatus.equals('oldPage') && term.getType()== '이용약관'}">이용약관</option>
-                    <option value="개인정보취급방침" th:selected="${pageStatus.equals('oldPage') && term.getType()== '개인정보취급방침'}">개인정보취급방침</option>
-                    <option value="회원가입 동의" th:selected="${pageStatus.equals('oldPage') && term.getType() == '회원가입 동의'}">회원가입 동의</option>
-                    <option value="주문동의" th:selected="${pageStatus.equals('oldPage') && term.getType() == '주문동의'}">주문동의</option>
+                <select id="type" name="type" th:disabled="${term != null}">
+                    <option value="" th:selected="${term == null}" th:disabled="${term ==null}">----- 전체 -----</option>
+                    <option value="이용약관" th:selected="${term != null && term.getType()== '이용약관'}" th:disabled="${term != null && term.getType()== '이용약관'}">이용약관</option>
+                    <option value="개인정보취급방침" th:selected="${term != null && term.type== '개인정보취급방침'}">개인정보취급방침</option>
+                    <option value="회원가입 동의" th:selected="${term != null && term.type == '회원가입 동의'}">회원가입 동의</option>
+                    <option value="주문동의" th:selected="${term != null && term.type == '주문동의'}">주문동의</option>
                 </select>
             </div>
 
             <div>
                 <span class="option">필수여부</span>
-                <label for="yn"></label><input type="checkbox" role="switch" id="yn" name="yn" value="필수" th:checked="${pageStatus.equals('oldPage') && term.getYn()== 'Y'}"/>
+                <label for="yn"></label><input type="checkbox" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && term.getYn() == 'Y'}"/>
+                <input type="hidden" id="_yn" name="yn" value="N"/>
             </div>
 
             <div>
                 <span class="option">전시 시작일</span>
                 <div id="period">
-                    <label for="openToEnd"></label><input class="box" type="text" id="openToEnd" autocomplete="off" name="openToEnd" th:value="${pageStatus.equals('oldPage') && not term.getStartDate().isEmpty()}" />
+                    <label for="openToEnd"></label><input class="box"  style="width:350px" type="text" id="openToEnd" autocomplete="off" th:value="${term != null ? term.getStartDate() + '~' + term.getEndDate() : ''}" />
+                    <input type="hidden" id="startDateInput" name="startDate" th:value="${term != null ?  term.getStartDate() : ''}" />
+                    <input type="hidden" id="endDateInput" name="endDate" th:value="${term != null ?  term.getEndDate() : ''}" />
                 </div>
             </div>
 
@@ -61,11 +66,24 @@
 
         <div>
             <span class="option">지원언어</span>
-            <label><input type="checkbox"  name="ko" value="ko"/>국문</label>
-            <label><input type="checkbox"  name="en" value="en"/>영문</label>
-            <label><input type="checkbox"  name="cn" value="cn"/>중문</label>
-            <label><input type="checkbox"  name="jp" value="jp"/>일문</label>
+
+            <div th:each="item : ${list}">
+                    <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
+            </div>
+                <label><input type="checkbox" id="checkboxko" name="termDtlList[0].lang" value="ko"  th:disabled="${term != null}"/>국문</label>
+<!--                <label><input type="checkbox" id="checkboxen" name="termDtlList[1].lang" value="en"  th:disabled="${term != null}"/>영문</label>-->
+<!--                <label><input type="checkbox" id="checkboxcn" name="termDtlList[2].lang" value="cn"  th:disabled="${term != null}"/>중문</label>-->
+<!--                <label><input type="checkbox" id="checkboxjp" name="termDtlList[3].lang" value="jp"  th:disabled="${term != null}"/>일문</label>-->
+
+<!--            <label><input type="checkbox"  name="termDtlList[0].lang" value="ko" th:checked="${list != null && list[0].getLang()=='ko'}" th:disabled="${term != null}" id="ko"/>국문</label>-->
+<!--            <label><input type="checkbox"  name="termDtlList[1].lang" value="en" th:checked="${list != null && list[1].getLang()=='en'}" th:disabled="${term != null}"/>영문</label>-->
+<!--            <label><input type="checkbox"  name="termDtlList[2].lang" value="cn" th:checked="${list != null && list[2].getLang()=='cn'}" th:disabled="${term != null}"/>중문</label>-->
+<!--            <label><input type="checkbox"  name="termDtlList[3].lang" value="jp" th:checked="${list != null && list[3].getLang()=='jp'}" th:disabled="${term != null}"/>일문</label>-->
         </div>
+
+
+
+
 
 
 
@@ -74,22 +92,29 @@
                 <tr>
                     <td class="option">약관정보</td>
                    <td>
-                            <ul class="nav nav-pills">
-                                <li class="nav-item active" onclick='lang(this.value)' value="ko">국문</li>
-                                <li class="nav-item active" onclick='lang(this.value)' value="en">영문</li>
-                                <li class="nav-item active" onclick='lang(this.value)' value="cn">중문</li>
-                                <li class="nav-item active" onclick='lang(this.value)' value="jp">일문</li>
-                                <!-- <li class="nav-item active" onclick='lang()'><a class="nav-link" th:href="@{'lang/'+ ${term.no} + 'ko'}">국문</a></li>-->
-                                <!--<li class="nav-item active"><a class="nav-link" th:href="@{'lang/'+ ${term.no} + 'en'}">영문</a></li>
-                                <li class="nav-item active"><a  class="nav-link" th:href="@{'lang/'+ ${term.no} + 'cn'}">중문</a></li>
-                                <li class="nav-item active"><a  class="nav-link" th:href="@{'lang/'+ ${term.no} + 'jp'}">일문</a></li>-->
+                            <ul class="nav nav-pills" id="liParent">
+                                <li class="nav-item active"  data-lang="ko"><button type="button" id="lang-ko" th:onclick="cntControll('ko')" >국문</button></li>
+                                <li class="nav-item active"  data-lang="en"><button type="button" id="lang-en" th:onclick="cntControll('en')">영문</button></li>
+                                <li class="nav-item active"  data-lang="cn"><button type="button" id="lang-cn" th:onclick="cntControll('cn')">중문</button></li>
+                                <li class="nav-item active"  data-lang="jp"><button type="button" id="lang-jp" th:onclick="cntControll('jp')">일문</button></li>
                             </ul>
                    </td>
                 </tr>
                     <tr>
                         <td class="option">약관 내용</td>
                         <td colspan="4">
-                            <label for="ir1"></label><textarea name="ctn" id="ctn" rows="10" cols="100"></textarea>
+                            <th:block th:if="${term != null}">
+                                <div id="parentTextarea" th:each="item : ${list}">
+                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none"> [[${term != null} ? ${item.getCnt()} : '내용을 입력하세요.']] </textarea>
+                                </div>
+                            </th:block>
+
+                            <th:block th:unless="${term != null}">
+                                    <textarea name="termDtlList[0].cnt" id="cnt-ko" rows="10" cols="100" style="display:block" >  </textarea>
+<!--                                    <textarea name="termDtlList[1].cnt" id="cnt-en" rows="10" cols="100" style="display:block" >  </textarea>-->
+<!--                                    <textarea name="termDtlList[2].cnt" id="cnt-cn" rows="10" cols="100" style="display:block" >  </textarea>-->
+<!--                                    <textarea name="termDtlList[3].cnt" id="cnt-jp" rows="10" cols="100" style="display:block" >  </textarea>-->
+                            </th:block>
                         </td>
                     </tr>
             </table>
@@ -98,56 +123,279 @@
 
         <div class="third-line">
             <div>
-                <span class="option">등록자</span><input type="text" th:value="${pageStatus.equals('oldPage')} ? ${term.getRgstBy()} : '현재사용자정보' " th:readonly="${pageStatus.equals('oldPage')}"/>
-                <span class="option">등록일시</span><input type="text" th:value="${pageStatus.equals('oldPage')} ? ${term.getStartDate()} : '' " th:readonly="${pageStatus.equals('oldPage')}"/>
+                <span class="option">등록자</span><label>
+                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} : ${session.user}"   th:readonly="${term != null}"/>
+            </label>
+                <span class="option">등록일시</span><label>
+                <input type="text" th:value="${term != null} ? ${term.getStartDate()} : ''"   th:readonly="${term != null}"/>
+            </label>
             </div>
 
+<th:block th:if="${term != null}">
             <div>
                 <span class="option">수정자</span>
-                <input type="text" th:value="${pageStatus.equals('oldPage')} ? ${term.getMdfBy()} : '현재사용자정보' " th:readonly="${pageStatus.equals('oldPage')}"/>
-                <span class="option">수정일시</span><input type="text" th:value="${pageStatus.equals('oldPage')} ? ${term.getMdfDate()} : '' " th:readonly="${pageStatus.equals('oldPage')}"/>
+                <label>
+                    <input type="text" th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/>
+                </label>
+                <span class="option">수정일시</span><label>
+                <input type="text"  th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/>
+            </label>
             </div>
+</th:block >
         </div>
 
         <div class="float-center">
+            <th:block th:if="${term != null}">
             <div>
-                <button type="reset">닫기</button>
-                <button type="submit">저장</button>
+                <button type="button" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
+                <button type="button">수정</button>
             </div>
+            </th:block>
+
+            <th:block th:unless="${term != null}">
+                <div>
+                    <button type="reset">초기화</button>
+<!--                    <button type="button" id="submitbtn"> 저장</button>-->
+                    <button type="button" id="submitbtn" value="save">저장</button>
+                </div>
+            </th:block>
         </div>
 
     </form>
 
 </div> <!-- end of container-->
 
-
-<script type="text/javascript" src="/js/common/jquery-cal.js"></script>
-<!--부트스트랩-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-
-<!--언어 구분-->
+<!-- ajax  -->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
 <script>
-    function lang(str) {
-        var lang = str;
-        var hiddenNo  = document.getElementById('hiddenNo').getValue();
 
-        $.ajax({
-                type : "post",
-                url : "/lang/lang/hiddenNo",
-                success :  function (result) {
-                    if (result === "정보 없음") {
-                        var ctn = document.getElementById("ctn");
-                        ctn.text()
+
+
+/* ---------------------------------------------------------상세페이지 ----------------------------------------------------------------*/
+//(ajax 사용x) 디테일 페이지 ajax 통신 대신에 데이터 한번에 가져와서 보여줌
+    <!--언어 구분-->
+    //let hiddenNo = document.getElementById("hiddenNo");
+
+    // $('#liParent').on('click', 'li', function () {
+    //     var selectedLang = $(this).data('lang');
+    //     var param = {'no': $('#hiddenNo').val(), 'lang': selectedLang};
+    //
+    //
+    //     $.ajax({
+    //         type: "post",
+    //         url: "/terms/lang",
+    //         contentType: "application/json; charset=utf-8",
+    //         data:
+    //
+    //             JSON.stringify(param),
+    //
+    //         dataType: "json",
+    //         success: function (result) {
+    //             if (result.cnt == null) {
+    //                 $('#cnt').text("정보 없음");
+    //             } else {
+    //                 $('#cnt').text(result.cnt);
+    //             }
+    //         },
+    //         error: function (error) {
+    //             alert(" 작업 오류!!! 다시 실행해 주세요!");
+    //             // return false;
+    //         }
+    //
+    //     });
+    // }); // end of $(liParent)
+
+
+
+
+
+/*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
+    if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
+        $("#checkboxko").prop("checked", true);
+    } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우
+        $('#parentTextarea').append('<textarea id ="cnt-ko" rows="10" cols="100">내용없음</textarea>');
+
+    }
+    if ($('#hiddenen').length) {
+        $("#checkboxen").prop("checked", true);
+    } else {
+        $('#parentTextarea').append('<textarea id ="cnt-en" rows="10" cols="100">내용없음</textarea>');
+
+    }
+
+    if ($('#hiddencn').length) {
+        $("#checkboxcn").prop("checked",  true);
+    } else {
+        $('#parentTextarea').append('<textarea id ="cnt-cn" rows="10" cols="100">내용없음</textarea>');
+
+    }
+
+    if ($('#hiddenjp').length) {
+        $("#checkboxjp").prop("checked",  true);
+    } else {
+        $('#parentTextarea').append('<textarea id ="cnt-jp" rows="10" cols="100">내용없음</textarea>');
+
+    }
+
+/* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
+    //  null check
+    const isEmpty = function(value){
+    return value === "" || value == null || (typeof value == "object" && !Object.keys(value).length);
+    };
+
+    // 입력값 nullCheck 필요함!
+    function check() {
+        // 사용자 입력 값 받아오기
+        var isType = isEmpty($("#type").val());
+        //var is_yn = isEmpty($("#_yn").val());
+        var isStartDateInput = isEmpty($("#startDateInput").val());
+        var isEndDateInput = isEmpty($("#endDateInput").val());
+        // var isTextareaKo = isEmpty($("#cnt-ko").val().trim.length < 1);
+
+        var check1 = isType;
+        //var check2 = is_yn;
+        var check3 = isStartDateInput;
+        var check4 = isEndDateInput;
+        //var check5 = isTextareaKo;
+
+        if (check1 || check3 || check4) {
+            alert('입력되지 않은 값이 존재합니다!');
+            return false;
+        }
+        return true;
+    }
+
+    //enter key 입력 --> form 제출 X
+    $('#term').on ('keydown', evt => {
+        if(evt.code === "Enter" || evt.keyCode === 13) {
+            evt.preventDefault();
+        }
+    });
+
+
+    //checkbox 필수여부 값보내기 (checkbox는 미선택 시 아예 값도 안넘어감.)
+    $("#yn").change(function() {
+        var c1 = $("#yn").is(":checked") ? "Y" : "N";
+        $("#_yn").val(c1);
+    });
+
+
+/* 위의 케이스의 경우 언어별 textarea가 빈값이어도 항상 size 4로 데이터가 전달됨.
+* 또한 빈값을 DB에 넣으려는 시도를 해서 lang 칼럼 무결성 제약조건 위배됨.
+* 한글버젼(first)만 저장되고 나머지 언어들(만약 영어 미체크하고 중국어를 기입했을 경우)의 값은 저장이 안됨.
+*/
+
+// ajax로 form 제출하기
+        #('submitbtn').on ('click' , function() {
+            var formsubmit = $(this).serialize();
+            $.ajax({
+                type: "post",
+                contentType:"application/json",
+                data: formsubmit,
+                url: "/terms/register",
+                dataType: "json",
+                success: function (result) {
+                    if(result > 0 ) {
+                        alert("업로드 성공!!");
+                        location.replace('/terms/'); // 작동안됨.
                     } else {
-
+                        alert("업로드 실패!!");
+                        location.replace('/terms/');
                     }
                 },
-                error : function (error) {
-                    return false;
+                error: function() {
+                    alert(" 작업 오류!!! 다시 실행해 주세요!");
+                    window.location.replace("/terms/");
                 }
+            });
 
-        });
+         });
+/*-----------------------------------------공통--------------------------------------------------------*/
+    // 초기페이지 국문 노출!
+
+        $("#cnt-ko").css('display','block');
+        $("#cnt-en","#cnt-cn","#cnt-jp").css('display','none');
+
+
+
+    // textarea 컨트롤
+    function cntControll (lang) {
+
+        if (lang === 'ko') {
+            $("#cnt-ko").css('display','block');
+            $("#cnt-en", "#cnt-cn", "#cnt-jp").css('display','none');
+
+        } else if (lang === 'en') {
+            $("#cnt-ko", "#cnt-cn", "#cnt-jp").css('display','none');
+            $("#cnt-en").css('display','block');
+
+
+        } else if (lang === 'cn') {
+            $("#cnt-ko","#cnt-en","#cnt-jp" ).css('display','none');
+            $("#cnt-cn").css('display','block');
+
+        } else {
+            $("#cnt-ko", "#cnt-en", "#cnt-cn").css('display','none');
+            $("#cnt-jp").css('display','block');
+
+        }
     }
+
+
+/* -----------------------------------------달력 --------------------------------------*/
+    var startDate= new Date();
+    var endDate = new Date();
+
+    if ($("#startDateInput").val()) {
+
+        var startDateInput = new Date($('#startDateInput').val());
+        var years = startDateInput.getFullYear();
+        var months = (startDateInput.getMonth() + 1).toString().padStart(2, '0');
+        var days = startDateInput.getDate().toString().padStart(2, '0');
+        startDate = years + '-' + months + '-' + days;
+
+        var endDateInput = new Date($('#endDateInput').val());
+        var yeare = endDateInput.getFullYear();
+        var monthe = (endDateInput.getMonth() + 1).toString().padStart(2, '0');
+        var daye = endDateInput.getDate().toString().padStart(2, '0');
+        endDate = yeare + '-' + monthe + '-' + daye;
+
+        $("#openToEnd").val(startDate + '~' + endDate ).change();
+        $("#openToEnd").prop("disabled", true);
+
+    } else {
+        startDate.setMonth(endDate.getMonth() - 1);
+
+
+            $('#openToEnd').daterangepicker({
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " ~ ",
+                    "applyLabel": "확인",
+                    "cancelLabel": "취소",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+                    "firstDay": 1
+                },
+                "startDate": startDate.getFullYear() + '-' + ('0' + (startDate.getMonth() + 1)).slice(-2) + '-' + ('0' + startDate.getDate()).slice(-2),
+                "endDate": endDate.getFullYear() + '-' + ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + ('0' + endDate.getDate()).slice(-2),
+                "drops": "down"
+
+            }, function (start, end, label) {
+
+                startDate = start.format('YYYY-MM-DD');
+                endDate = end.format('YYYY-MM-DD');
+
+                $('#startDateInput').val(startDate);
+                $('#endDateInput').val(endDate);
+
+            });
+    }
+
 
 </script>
 

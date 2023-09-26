@@ -4,7 +4,6 @@ import com.demo1.demo1.domain.Term;
 import com.demo1.demo1.domain.TermDtl;
 import com.demo1.demo1.repository.JdbcTermRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,21 +18,32 @@ public class TermService {
         this.jdbcTermRepository = jdbcTermRepository;
     }
     */
-    public List<Term> findAll(){
-        return jdbcTermRepository.findAll();
+
+    /*-------------------------- Total Page 구하기-------------------------*/
+    public int listCount () {
+        return jdbcTermRepository.listCount();
     }
 
+    /*-------------------------메인페이지(BD데이터 List) ---------------------*/
+    public List<Term> findAll(){return jdbcTermRepository.findAll();}
+    public List<Term> findAll(int pageNum){return jdbcTermRepository.findAll(pageNum);}
+
+
+    /*-------------------------상세페이지-------------------------------------*/
     public Term findOne(int no) {
         return jdbcTermRepository.findOne(no);
     }
 
-    public TermDtl findConts(int no, String lang) {
-        return jdbcTermRepository.findConts(no , lang);
+    /*-----------------------상세 페이지 - 언어별 (ajax)-------------------------*/
+    public TermDtl findConts(int no, String lang) {return jdbcTermRepository.findConts(no , lang);}
+    public List<TermDtl> findConts(int no) {
+        return jdbcTermRepository.findConts(no);
     }
 
-    public List<Term> Search(Term term) {
-        return jdbcTermRepository.search(term);
-    }
+    /*------------------------------ 검색 ------------------------------------*/
+    public List<Term> search(Term term, String category) {return jdbcTermRepository.search(term, category);}
 
+    /*------------------------------ 등록  ------------------------------------*/
+    public int register(Term term) {return jdbcTermRepository.register(term);}
 
 }

@@ -40,4 +40,9 @@ values ( 50,
          SYSDATE);
 
 /* term-dtl 더미데이터*/
+insert into TERM_DTL (TERM_NO, TERM_LANG, TERM_CNT)
+values (1,
+        'ko',
+        'This is the order-Agreement. (ver.En)');
 
+한글 주문동의서입니다

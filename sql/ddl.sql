@@ -11,7 +11,7 @@ CREATE TABLE TERM_MST (
 );
 
 CREATE TABLE TERM_DTL (
-                          TERM_NO NUMBER(3) Foreign key,
+                          TERM_NO NUMBER(3),
                           TERM_LANG VARCHAR2(9 CHAR) NOT NULL,
                           TERM_CNT CLOB NOT NULL
 );

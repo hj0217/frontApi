@@ -20,14 +20,17 @@
 
 <div class="container">
 
-    <input type="hidden" id="hiddenNo" th:value="${term != null ? term.no: 0 }"/>
+
 
 
     <h2 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h2>
-<!--    <form name="term" id="term" method="post" th:action="@{'/terms/register'}" onsubmit="return check()">-->
-        <form name="form" id="form" method="post" onsubmit="return check()">
 
-        <div class="first-line">
+        <form name="form" id="form" method="post" onsubmit="return check()">
+<!--<input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0 }"/>-->
+<!--<input type="hidden"  name="termDtlList[0].no" th:value="${term != null ? term.no: 0 }"/>-->
+
+
+            <div class="first-line">
             <div>
                 <span class="option">약관유형</span>
                 <label for="type"></label>
@@ -105,7 +108,7 @@
                         <td colspan="4">
                             <th:block th:if="${term != null}">
                                 <div id="parentTextarea" th:each="item : ${list}">
-                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none"> [[${term != null} ? ${item.getCnt()} : '내용을 입력하세요.']] </textarea>
+                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '내용을 입력하세요.']] </textarea>
                                 </div>
                             </th:block>
 
@@ -124,10 +127,10 @@
         <div class="third-line">
             <div>
                 <span class="option">등록자</span><label>
-                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} : ${session.user}"   th:readonly="${term != null}"/>
+                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} :'홍길동'"   th:readonly="${term != null}"/>
             </label>
                 <span class="option">등록일시</span><label>
-                <input type="text" th:value="${term != null} ? ${term.getStartDate()} : ''"   th:readonly="${term != null}"/>
+                <input type="text"  th:value="${term != null} ? ${term.getStartDate()} : 'now'"   th:readonly="${term != null}"/>
             </label>
             </div>
 
@@ -135,10 +138,10 @@
             <div>
                 <span class="option">수정자</span>
                 <label>
-                    <input type="text" th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/>
+                    <input type="text"  th:value="${term != null} ? ${term.getMdfBy()} : '홍길동2'"  th:readonly="${term != null}"/>
                 </label>
                 <span class="option">수정일시</span><label>
-                <input type="text"  th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/>
+                <input type="text"   th:value="${term != null} ? ${term.getMdfDate()} : 'later'"  th:readonly="${term != null}"/>
             </label>
             </div>
 </th:block >
@@ -155,7 +158,6 @@
             <th:block th:unless="${term != null}">
                 <div>
                     <button type="reset">초기화</button>
-<!--                    <button type="button" id="submitbtn"> 저장</button>-->
                     <button type="button" id="submitbtn" value="save">저장</button>
                 </div>
             </th:block>
@@ -164,6 +166,20 @@
     </form>
 
 </div> <!-- end of container-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- ajax  -->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
@@ -204,7 +220,6 @@
     //
     //     });
     // }); // end of $(liParent)
-
 
 
 
@@ -286,36 +301,58 @@
 */
 
 // ajax로 form 제출하기
-        #('submitbtn').on ('click' , function() {
-            var formsubmit = $(this).serialize();
+
+
+        $('#submitbtn').on ('click' , function() {
+
+            //var formsubmit = $('form').serialize(); // form값들을 queryString형태로 만들어줌
+            //console.log(JSON.stringify(formsubmit));
+
+            var formData = {
+                type: $('#type').val(),
+                yn: $('#_yn').val(),
+                startDate: $('#startDateInput').val(),
+                endDate: $('#endDateInput').val(),
+                termDtlList : [
+                    {
+                        lang: 'ko',
+                        cnt: $('#cnt-ko').val()
+                    }
+                ]
+            }
+
             $.ajax({
                 type: "post",
-                contentType:"application/json",
-                data: formsubmit,
+                //data: JSON.stringify(formsubmitArray[0]),
+                // data: {
+                //   "type" :"test용"
+                // },
+                data: JSON.stringify(formData),
+                contentType:"application/json; charset=UTF-8",
                 url: "/terms/register",
-                dataType: "json",
+                dataType:'json',
+                timeout: 10000,
                 success: function (result) {
+                    console.log('result값:' + result);
                     if(result > 0 ) {
                         alert("업로드 성공!!");
-                        location.replace('/terms/'); // 작동안됨.
+                        location.href = '/terms/';
                     } else {
                         alert("업로드 실패!!");
-                        location.replace('/terms/');
+                        location.href = '/terms/';
                     }
                 },
                 error: function() {
                     alert(" 작업 오류!!! 다시 실행해 주세요!");
-                    window.location.replace("/terms/");
+                    location.href = '/terms/';
                 }
             });
-
          });
 /*-----------------------------------------공통--------------------------------------------------------*/
     // 초기페이지 국문 노출!
 
         $("#cnt-ko").css('display','block');
-        $("#cnt-en","#cnt-cn","#cnt-jp").css('display','none');
-
+        $("#cnt-en,#cnt-cn,#cnt-jp").css('display','none');
 
 
     // textarea 컨트롤
@@ -323,19 +360,19 @@
 
         if (lang === 'ko') {
             $("#cnt-ko").css('display','block');
-            $("#cnt-en", "#cnt-cn", "#cnt-jp").css('display','none');
+            $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
 
         } else if (lang === 'en') {
-            $("#cnt-ko", "#cnt-cn", "#cnt-jp").css('display','none');
+            $("#cnt-ko, #cnt-cn, #cnt-jp").css('display','none');
             $("#cnt-en").css('display','block');
 
 
         } else if (lang === 'cn') {
-            $("#cnt-ko","#cnt-en","#cnt-jp" ).css('display','none');
+            $("#cnt-ko,#cnt-en,#cnt-jp" ).css('display','none');
             $("#cnt-cn").css('display','block');
 
         } else {
-            $("#cnt-ko", "#cnt-en", "#cnt-cn").css('display','none');
+            $("#cnt-ko, #cnt-en, #cnt-cn").css('display','none');
             $("#cnt-jp").css('display','block');
 
         }
@@ -366,7 +403,7 @@
     } else {
         startDate.setMonth(endDate.getMonth() - 1);
 
-
+        $(function () {
             $('#openToEnd').daterangepicker({
                 "locale": {
                     "format": "YYYY-MM-DD",
@@ -394,6 +431,7 @@
                 $('#endDateInput').val(endDate);
 
             });
+        });
     }
 
 

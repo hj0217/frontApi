@@ -1,5 +1,6 @@
 package com.demo1.demo1.repository;
 
+import com.demo1.demo1.domain.PageInfo;
 import com.demo1.demo1.domain.Term;
 import com.demo1.demo1.domain.TermDtl;
 import lombok.RequiredArgsConstructor;
@@ -68,29 +69,35 @@ public class JdbcTermRepository implements TermRepository {
     }
 
     @Override
-    public List<Term> findAll(int pageNum) {
-        String sql = "select * from TERM_MST where ";
+    public List<Term> findAll(PageInfo pi) {
+        int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
+        String sql = "select * from TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? rows fetch next ? rows only";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
+        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+            pst.setInt(1, offset);
+            pst.setInt(2,pi.getBoardLimit());
 
-            List<Term> terms = new ArrayList<>();
+            try (ResultSet rs = pst.executeQuery();) {
+                List<Term> terms = new ArrayList<>();
 
-            if (rs != null) {
-                while (rs.next()) {
-                    Term term = new Term();
-                    term.setNo(rs.getInt("Term_no"));
-                    term.setType(rs.getString("Term_type"));
-                    term.setYn(rs.getString("Term_yn"));
-                    term.setStartDate(rs.getString("Term_startDate"));
-                    term.setEndDate(rs.getString("Term_endDate"));
-                    term.setRgstBy(rs.getString("Term_rgst_by"));
-                    term.setRgstDate(rs.getString("Term_rgst_date"));
-                    term.setMdfBy(rs.getString("Term_mdf_by"));
-                    term.setMdfDate(rs.getString("Term_mdf_date"));
-                    terms.add(term);
+                if (rs != null) {
+                    while (rs.next()) {
+                        Term term = new Term();
+                        term.setNo(rs.getInt("Term_no"));
+                        term.setType(rs.getString("Term_type"));
+                        term.setYn(rs.getString("Term_yn"));
+                        term.setStartDate(rs.getString("Term_startDate"));
+                        term.setEndDate(rs.getString("Term_endDate"));
+                        term.setRgstBy(rs.getString("Term_rgst_by"));
+                        term.setRgstDate(rs.getString("Term_rgst_date"));
+                        term.setMdfBy(rs.getString("Term_mdf_by"));
+                        term.setMdfDate(rs.getString("Term_mdf_date"));
+                        terms.add(term);
+                    }
                 }
+                return terms;
             }
-            return terms;
+
         } catch (Exception e) {
             throw new IllegalStateException(e);
 

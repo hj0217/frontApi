@@ -5,12 +5,12 @@ import com.demo1.demo1.domain.Term;
 import com.demo1.demo1.domain.TermDtl;
 import com.demo1.demo1.service.TermService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Controller
@@ -22,34 +22,38 @@ public class TermController {
 
 
     /*--------------------------------메인페이지(BD데이터 List)----------------------------------------*/
-    @RequestMapping("/")
-    public String home(Model model) {
-        List<Term> terms = termService.findAll();
-
-        //현재 사용자 정보 session에 심어주기
-        //session.setAttribute("user", "이형주(현재 사용자 정보)");
-        model.addAttribute("terms", terms);
-        return "home";
-    }
-
-//페이징처리중////
 //    @RequestMapping("/")
-//    public String home(@RequestParam(value="pageNum", defaultValue = "1") String pageNumStr, Model model) {
+//    public String home(Model model) {
+//        List<Term> terms = termService.findAll();
 //
-//        //페이징 처리
-//        int listCount = termService.listCount();
-//        System.out.println("게시글 total 몇개 (controller): " + listCount);
-//
-//        int pageLimit = 5;	// 보여질 페이지 수
-//        int boardLimit =10;	// 페이지 당 게시글 수
-//        int pageNum = Integer.parseInt(pageNumStr);
-//        System.out.println("현 페이지" + pageNum);
-//
-//
-//        List<Term> terms = termService.findAll(pageNum);
 //        model.addAttribute("terms", terms);
 //        return "home";
 //    }
+
+
+//페이징 처리완료
+    @RequestMapping("/")
+    public String home(@RequestParam(value = "boardLimit", required=false, defaultValue = "30") String boardLimitStr,
+                       @RequestParam(value = "pageNum", required=false, defaultValue = "1") String pageNumStr,
+                       Model model) {
+
+        // 검색 조건 확인 (검색결과 몇개 출력 / 현재 페이지 번호 / 검색 조건 (Term)
+        int boardLimit = Integer.parseInt(boardLimitStr);
+        int PageNum = Integer.parseInt(pageNumStr);
+
+
+        ////전체 게시글 구하기
+        int listCount = termService.listCount();
+        int pageLimit = 5;	// 보여질 페이지 수(하단 페이지 번호)
+
+        PageInfo pi = Pagination.getPageInfo(listCount, PageNum, pageLimit, boardLimit);
+
+        List<Term> terms = termService.findAll(pi);
+        model.addAttribute("terms", terms);
+        model.addAttribute("pi", pi);
+
+        return "home";
+    }
 
 
 
@@ -64,52 +68,6 @@ public class TermController {
         model.addAttribute("terms", terms);
         return "home";
     }
-
-
-//페이징처리중////
-//    @RequestMapping("/")
-//    public String home(@RequestParam(value = "searchCountStr", required = false, defaultValue = "30개") String searchCountStr,
-//                       @RequestParam(value = "pageNumStr", required = false, defaultValue = "1") String pageNumStr,
-//                       Term term, PageInfo pageInfo, Model model) {
-//
-//
-//        // 검색 조건 확인 (검색결과 몇개 출력 / 현재 페이지 번호 / 검색 조건 (Term)
-//        int searchCount = Integer.parseInt("searchCountStr");
-//        int PageNum = Integer.parseInt("pageNumStr");
-//
-//        System.out.println(searchCount);
-//        System.out.println(PageNum);
-//
-//
-//        ////전체 게시글 구하기
-//        int listCount = termService.listCount();
-//        System.out.println("게시글 total 몇개 (controller): " + listCount);
-//
-//        int pageLimit = 5;	// 보여질 페이지 수
-//        int boardLimit =10;	// 페이지 당 게시글 수
-//
-//
-//        // 글 번호 뒤에서부터 출력해 주는 변수
-//        // 1p --> row = 전체 게시글 수
-//        // 2p --> row = 전체 게시글 수 - boardLimit
-//        // 3p --> row = 전체 게시글 수 - boardLimit * 2
-//        //int row = listCount - (PageNum - 1) * boardLimit;
-//
-//
-////        PageInfo pi = Pagination.getPageInfo(listCount, PageNum, pageLimit, boardLimit);
-//        // 페이징 처리 끝
-//        //System.out.println("pi: " + pi.getEndPage());
-//
-//
-//        List<Term> terms = termService.findAll();
-////        model.addAttribute("terms", terms);
-////        model.addAttribute("row", row);
-//        //model.addAttribute("pi", pi);
-//
-//        return "home";
-//    }
-
-
 
 
     /*------------------------------등록 페이지 & 상세 페이지--------------------------------------*/
@@ -161,11 +119,20 @@ public class TermController {
 //    }
 
     /*--------------------------------------신규 등록 (ajax-form-serialize)----------------------------------------------*/
-    @RequestMapping(value = "/register")
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     @Transactional
     @ResponseBody
     public int register (@RequestBody Term term) {
-        System.out.println(term.toString());
+    //public int register (@RequestParam (value= "type") String type) {
+        System.out.println(term.getNo());
+        System.out.println(term.getType());
+        System.out.println(term.getYn());
+        System.out.println(term.getStartDate());
+        System.out.println(term.getEndDate());
+        System.out.println(term.getTermDtlList().get(0).getCnt());
+
+        //System.out.println(type);
+        //return 1;
         return termService.register(term);
     }
 }

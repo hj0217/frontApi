@@ -11,6 +11,8 @@
             padding:8px; /* 테두리와 내용사이의 간격 띄우기 */
         }
     </style>
+    <!--bootstrap-->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <!-- date range picker  -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
@@ -60,11 +62,11 @@
     </form>
 
 
-        총<span th:text="${terms.size()}"></span>건
-            <select id="count" name="searchCountStr">
-                <option selected value="30개">30개씩 보기</option>
-                <option value="50개">50개씩 보기</option>
-                <option value="70개">70개씩 보기</option>
+        총<span th:text="${pi.getListCount()}"></span>건
+            <select id="boardLimit" name="boardLimit">
+                <option th:value="30" th:selected="${pi == null || pi.getBoardLimit()== 30}">30개씩 보기</option>
+                <option th:value="50" th:selected="${pi.getBoardLimit() == 50}">50개씩 보기</option>
+                <option th:value="70" th:selected="${pi.getBoardLimit() == 70}">70개씩 보기</option>
             </select>
 
         <a th:href="@{'/terms/detail/'}"><button>등록</button></a>
@@ -100,16 +102,19 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
 
-                <li class="page-item disabled">
-                    <a class="page-link">Previous</a>
+                <li class="page-item" th:classappend="${pi.getCurrentPage() <= pi.getStartPage()} ? 'disabled'" >
+                    <a class="page-link" th:href="@{'/terms/?' +'pageNum=' + ${pi.getCurrentPage()-1} +  '&boardLimit=' + ${pi.getBoardLimit()}}">Previous</a>
                 </li>
 
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+             <th:block th:with=" start=${pi.getStartPage()}, end=${pi.getEndPage()}">
+                <li class="page-item" th:with="start =${pi.getStartPage()}, end=${pi.getEndPage()}"
+                                        th:each="piBtn : ${#numbers.sequence(start, end)}">
+                    <a class="page-link" th:href="@{'/terms/?' + 'pageNum=' + ${piBtn} + '&boardLimit=' + ${pi.getBoardLimit()}}" th:text="${piBtn}"></a>
+                </li>
+             </th:block>
 
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
+                <li class="page-item" th:classappend="${pi.getCurrentPage() >= pi.getEndPage()} ? 'disabled'">
+                    <a class="page-link" th:href="@{'/terms/?'+'pageNum=' +${pi.getCurrentPage()+1} + '&boardLimit=' + ${pi.getBoardLimit()}}">Next</a>
                 </li>
 
             </ul>
@@ -118,7 +123,8 @@
     </div><!-- end of container -->
 
 
-
+<!--bootstrap-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <!-- date range picker  -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -166,6 +172,16 @@
 
         });
     });
+
+/* -----------------------------------------공통 --------------------------------------*/
+//출력 페이지 변경
+$('#boardLimit').change(function(){
+    var boardLimit = $(this).val();
+    var newURL = 'boardLimit=' + boardLimit;
+    location.href = '/terms/?'+ newURL;
+});
+
+
 
 </script>
 </body>

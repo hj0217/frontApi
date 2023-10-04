@@ -5,7 +5,7 @@ import com.demo1.demo1.domain.TermDtl;
 import com.demo1.demo1.repository.JdbcTermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.demo1.demo1.domain.PageInfo;
 import java.util.List;
 
 @Service
@@ -24,9 +24,10 @@ public class TermService {
         return jdbcTermRepository.listCount();
     }
 
+
     /*-------------------------메인페이지(BD데이터 List) ---------------------*/
     public List<Term> findAll(){return jdbcTermRepository.findAll();}
-    public List<Term> findAll(int pageNum){return jdbcTermRepository.findAll(pageNum);}
+    public List<Term> findAll(PageInfo pi){return jdbcTermRepository.findAll(pi);}
 
 
     /*-------------------------상세페이지-------------------------------------*/

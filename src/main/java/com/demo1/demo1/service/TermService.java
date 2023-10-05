@@ -6,10 +6,13 @@ import com.demo1.demo1.repository.JdbcTermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.demo1.demo1.domain.PageInfo;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TermService {
     private final JdbcTermRepository jdbcTermRepository;
 

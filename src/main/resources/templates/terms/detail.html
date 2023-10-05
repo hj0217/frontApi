@@ -25,9 +25,10 @@
 
     <h2 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h2>
 
-        <form name="form" id="form" method="post" onsubmit="return check()">
-<!--<input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0 }"/>-->
-<!--<input type="hidden"  name="termDtlList[0].no" th:value="${term != null ? term.no: 0 }"/>-->
+        <!--<form name="form" id="form" method="post" onsubmit="return check()">-->
+        <form name="form" id="form" method="post">
+        <input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0 }"/>
+
 
 
             <div class="first-line">
@@ -45,7 +46,7 @@
 
             <div>
                 <span class="option">필수여부</span>
-                <label for="yn"></label><input type="checkbox" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && term.getYn() == 'Y'}"/>
+                <label for="yn"></label><input type="checkbox" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && term.getYn() == 'Y' || term != null && term.getYn() == 'N'}"/>
                 <input type="hidden" id="_yn" name="yn" value="N"/>
             </div>
 
@@ -73,19 +74,21 @@
             <div th:each="item : ${list}">
                     <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
             </div>
-                <label><input type="checkbox" id="checkboxko" name="termDtlList[0].lang" value="ko"  th:disabled="${term != null}"/>국문</label>
-<!--                <label><input type="checkbox" id="checkboxen" name="termDtlList[1].lang" value="en"  th:disabled="${term != null}"/>영문</label>-->
-<!--                <label><input type="checkbox" id="checkboxcn" name="termDtlList[2].lang" value="cn"  th:disabled="${term != null}"/>중문</label>-->
-<!--                <label><input type="checkbox" id="checkboxjp" name="termDtlList[3].lang" value="jp"  th:disabled="${term != null}"/>일문</label>-->
+            <th:block th:if="${term != null}">
+                <label><input type="checkbox" id="checkboxko" value="ko"  th:disabled="${term != null}"/>국문</label>
+                <label><input type="checkbox" id="checkboxen" value="en"  th:disabled="${term != null}"/>영문</label>
+                <label><input type="checkbox" id="checkboxcn" value="cn"  th:disabled="${term != null}"/>중문</label>
+                <label><input type="checkbox" id="checkboxjp" value="jp"  th:disabled="${term != null}"/>일문</label>
+            </th:block>
 
-<!--            <label><input type="checkbox"  name="termDtlList[0].lang" value="ko" th:checked="${list != null && list[0].getLang()=='ko'}" th:disabled="${term != null}" id="ko"/>국문</label>-->
-<!--            <label><input type="checkbox"  name="termDtlList[1].lang" value="en" th:checked="${list != null && list[1].getLang()=='en'}" th:disabled="${term != null}"/>영문</label>-->
-<!--            <label><input type="checkbox"  name="termDtlList[2].lang" value="cn" th:checked="${list != null && list[2].getLang()=='cn'}" th:disabled="${term != null}"/>중문</label>-->
-<!--            <label><input type="checkbox"  name="termDtlList[3].lang" value="jp" th:checked="${list != null && list[3].getLang()=='jp'}" th:disabled="${term != null}"/>일문</label>-->
+            <th:block th:unless="${term != null}">
+                <label><input type="checkbox"  id="checkboxkoForNull"  value="ko" />국문</label>
+                <label><input type="checkbox"  id="checkboxenForNull"  value="en" />영문</label>
+                <label><input type="checkbox"  id="checkboxcnForNull"  value="cn" />중문</label>
+                <label><input type="checkbox"  id="checkboxjpForNull"  value="jp" />일문</label>
+            </th:block>
+
         </div>
-
-
-
 
 
 
@@ -96,7 +99,7 @@
                     <td class="option">약관정보</td>
                    <td>
                             <ul class="nav nav-pills" id="liParent">
-                                <li class="nav-item active"  data-lang="ko"><button type="button" id="lang-ko" th:onclick="cntControll('ko')" >국문</button></li>
+                                <li class="nav-item active"  data-lang="ko"><button type="button" id="lang-ko" th:onclick="cntControll('ko')">국문</button></li>
                                 <li class="nav-item active"  data-lang="en"><button type="button" id="lang-en" th:onclick="cntControll('en')">영문</button></li>
                                 <li class="nav-item active"  data-lang="cn"><button type="button" id="lang-cn" th:onclick="cntControll('cn')">중문</button></li>
                                 <li class="nav-item active"  data-lang="jp"><button type="button" id="lang-jp" th:onclick="cntControll('jp')">일문</button></li>
@@ -106,18 +109,18 @@
                     <tr>
                         <td class="option">약관 내용</td>
                         <td colspan="4">
-                            <th:block th:if="${term != null}">
-                                <div id="parentTextarea" th:each="item : ${list}">
-                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '내용을 입력하세요.']] </textarea>
-                                </div>
-                            </th:block>
+                            <div id="parentTextarea">
+                                <th:block th:if="${term != null}" th:each="item : ${list}">
+                                        <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
+                                </th:block>
+                            </div>
 
-                            <th:block th:unless="${term != null}">
-                                    <textarea name="termDtlList[0].cnt" id="cnt-ko" rows="10" cols="100" style="display:block" >  </textarea>
-<!--                                    <textarea name="termDtlList[1].cnt" id="cnt-en" rows="10" cols="100" style="display:block" >  </textarea>-->
-<!--                                    <textarea name="termDtlList[2].cnt" id="cnt-cn" rows="10" cols="100" style="display:block" >  </textarea>-->
-<!--                                    <textarea name="termDtlList[3].cnt" id="cnt-jp" rows="10" cols="100" style="display:block" >  </textarea>-->
-                            </th:block>
+<!--                            <th:block th:unless="${term != null}">-->
+<!--                                    <textarea   id="cnt-ko" rows="10" cols="100" style="display:none" >  </textarea>-->
+<!--                                    <textarea   id="cnt-en" rows="10" cols="100" style="display:none" >  </textarea>-->
+<!--                                    <textarea   id="cnt-cn" rows="10" cols="100" style="display:none" >  </textarea>-->
+<!--                                    <textarea   id="cnt-jp" rows="10" cols="100" style="display:none" >  </textarea>-->
+<!--                            </th:block>-->
                         </td>
                     </tr>
             </table>
@@ -127,10 +130,10 @@
         <div class="third-line">
             <div>
                 <span class="option">등록자</span><label>
-                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} :'홍길동'"   th:readonly="${term != null}"/>
+                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} :''"   th:readonly="${term != null}"/>
             </label>
                 <span class="option">등록일시</span><label>
-                <input type="text"  th:value="${term != null} ? ${term.getStartDate()} : 'now'"   th:readonly="${term != null}"/>
+                <input type="text"  th:value="${term != null} ? ${term.getStartDate()} : ''"   th:readonly="${term != null}"/>
             </label>
             </div>
 
@@ -138,10 +141,10 @@
             <div>
                 <span class="option">수정자</span>
                 <label>
-                    <input type="text"  th:value="${term != null} ? ${term.getMdfBy()} : '홍길동2'"  th:readonly="${term != null}"/>
+                    <input type="text"  th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/>
                 </label>
                 <span class="option">수정일시</span><label>
-                <input type="text"   th:value="${term != null} ? ${term.getMdfDate()} : 'later'"  th:readonly="${term != null}"/>
+                <input type="text"   th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/>
             </label>
             </div>
 </th:block >
@@ -166,20 +169,6 @@
     </form>
 
 </div> <!-- end of container-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- ajax  -->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
@@ -225,37 +214,34 @@
 
 
 /*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
-    if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
-        $("#checkboxko").prop("checked", true);
-    } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우
-        $('#parentTextarea').append('<textarea id ="cnt-ko" rows="10" cols="100">내용없음</textarea>');
 
-    }
-    if ($('#hiddenen').length) {
-        $("#checkboxen").prop("checked", true);
-    } else {
-        $('#parentTextarea').append('<textarea id ="cnt-en" rows="10" cols="100">내용없음</textarea>');
+        if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
+            $("#checkboxko").prop("checked", true);
+        } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우
+            $('#parentTextarea').append('<textarea id ="cnt-ko" rows="10" cols="100"></textarea>');
+        }
+        if ($('#hiddenen').length) {
+            $("#checkboxen").prop("checked", true);
+        } else {
+            $('#parentTextarea').append('<textarea id ="cnt-en" rows="10" cols="100"></textarea>');
+        }
 
-    }
+        if ($('#hiddencn').length) {
+            $("#checkboxcn").prop("checked",  true);
+        } else {
+            $('#parentTextarea').append('<textarea id ="cnt-cn" rows="10" cols="100"></textarea>');
+        }
 
-    if ($('#hiddencn').length) {
-        $("#checkboxcn").prop("checked",  true);
-    } else {
-        $('#parentTextarea').append('<textarea id ="cnt-cn" rows="10" cols="100">내용없음</textarea>');
-
-    }
-
-    if ($('#hiddenjp').length) {
-        $("#checkboxjp").prop("checked",  true);
-    } else {
-        $('#parentTextarea').append('<textarea id ="cnt-jp" rows="10" cols="100">내용없음</textarea>');
-
-    }
+        if ($('#hiddenjp').length) {
+            $("#checkboxjp").prop("checked",  true);
+        } else {
+            $('#parentTextarea').append('<textarea id ="cnt-jp" rows="10" cols="100"></textarea>');
+        }
 
 /* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
     //  null check
     const isEmpty = function(value){
-    return value === "" || value == null || (typeof value == "object" && !Object.keys(value).length);
+        return value === "" || value == null || (typeof value == "object" && !Object.keys(value).length);
     };
 
     // 입력값 nullCheck 필요함!
@@ -265,28 +251,53 @@
         //var is_yn = isEmpty($("#_yn").val());
         var isStartDateInput = isEmpty($("#startDateInput").val());
         var isEndDateInput = isEmpty($("#endDateInput").val());
-        // var isTextareaKo = isEmpty($("#cnt-ko").val().trim.length < 1);
+
+        //textarea
+        var isTextareaKo = false;
+        var isTextareaEn = false;
+        var isTextareaCn = false;
+        var isTextareaJp = false;
+
+        if ($('#checkboxkoForNull').prop('checked')) {
+            isTextareaKo = isEmpty($('#cnt-ko').val());
+        }
+
+        if ($('#checkboxenForNull').prop('checked')) {
+            isTextareaEn = isEmpty($('#cnt-en').val());
+        }
+
+        if ($('#checkboxcnForNull').prop('checked')) {
+            isTextareaCn = isEmpty($('#cnt-cn').val());
+        }
+
+        if ($('#checkboxjpForNull').prop('checked')) {
+            isTextareaJp = isEmpty($('#cnt-jp').val());
+        }
 
         var check1 = isType;
         //var check2 = is_yn;
         var check3 = isStartDateInput;
         var check4 = isEndDateInput;
-        //var check5 = isTextareaKo;
+        var check5 = isTextareaKo;
+        var check6 = isTextareaEn;
+        var check7 = isTextareaCn;
+        var check8  = isTextareaJp;
 
         if (check1 || check3 || check4) {
             alert('입력되지 않은 값이 존재합니다!');
             return false;
         }
+
         return true;
-    }
+    } // end of function check()
+
 
     //enter key 입력 --> form 제출 X
-    $('#term').on ('keydown', evt => {
+    $('#form').on ('keydown', evt => {
         if(evt.code === "Enter" || evt.keyCode === 13) {
             evt.preventDefault();
         }
     });
-
 
     //checkbox 필수여부 값보내기 (checkbox는 미선택 시 아예 값도 안넘어감.)
     $("#yn").change(function() {
@@ -295,58 +306,100 @@
     });
 
 
-/* 위의 케이스의 경우 언어별 textarea가 빈값이어도 항상 size 4로 데이터가 전달됨.
-* 또한 빈값을 DB에 넣으려는 시도를 해서 lang 칼럼 무결성 제약조건 위배됨.
-* 한글버젼(first)만 저장되고 나머지 언어들(만약 영어 미체크하고 중국어를 기입했을 경우)의 값은 저장이 안됨.
-*/
+    var arr = [];
+
+    $("#checkboxkoForNull,#checkboxenForNull, #checkboxcnForNull, #checkboxjpForNull ").change(function() {
+        var selectedLang = $(this).val();
+        arr.push(selectedLang);
+        $(this).attr('name', 'termDtlList['+arr.length+'].lang');
+
+        if (selectedLang ==="ko") {
+            $("#cnt-ko").attr('name', 'termDtlList['+arr.length+'].cnt');
+        }
+        if (selectedLang === "en") {
+            $("#cnt-en").attr('name', 'termDtlList['+arr.length+'].cnt');
+        }
+        if (selectedLang === "cn") {
+            $("#cnt-cn").attr('name', 'termDtlList['+arr.length+'].cnt');
+        }
+        if (selectedLang === "jp") {
+            $("#cnt-jp").attr('name', 'termDtlList['+arr.length+'].cnt');
+        }
+    });
+
 
 // ajax로 form 제출하기
-
-
         $('#submitbtn').on ('click' , function() {
 
             //var formsubmit = $('form').serialize(); // form값들을 queryString형태로 만들어줌
             //console.log(JSON.stringify(formsubmit));
 
-            var formData = {
-                type: $('#type').val(),
-                yn: $('#_yn').val(),
-                startDate: $('#startDateInput').val(),
-                endDate: $('#endDateInput').val(),
-                termDtlList : [
-                    {
+            if(check() === true) {
+                var formData = {
+                    type: $('#type').val(),
+                    yn: $('#_yn').val(),
+                    startDate: $('#startDateInput').val(),
+                    endDate: $('#endDateInput').val(),
+                    termDtlList: []
+                };
+
+                // 한국어가 체크된 경우
+                if ($('#checkboxkoForNull').prop('checked')) {
+                    formData.termDtlList.push({
                         lang: 'ko',
                         cnt: $('#cnt-ko').val()
-                    }
-                ]
-            }
-
-            $.ajax({
-                type: "post",
-                //data: JSON.stringify(formsubmitArray[0]),
-                // data: {
-                //   "type" :"test용"
-                // },
-                data: JSON.stringify(formData),
-                contentType:"application/json; charset=UTF-8",
-                url: "/terms/register",
-                dataType:'json',
-                timeout: 10000,
-                success: function (result) {
-                    console.log('result값:' + result);
-                    if(result > 0 ) {
-                        alert("업로드 성공!!");
-                        location.href = '/terms/';
-                    } else {
-                        alert("업로드 실패!!");
-                        location.href = '/terms/';
-                    }
-                },
-                error: function() {
-                    alert(" 작업 오류!!! 다시 실행해 주세요!");
-                    location.href = '/terms/';
+                    });
                 }
-            });
+                // 영어가 체크된 경우
+                if ($('#checkboxenForNull').prop('checked')) {
+                    formData.termDtlList.push({
+                        lang: 'en',
+                        cnt: $('#cnt-en').val()
+                    });
+                }
+                // 중국어가 체크된 경우
+                if ($('#checkboxcnForNull').prop('checked')) {
+                    formData.termDtlList.push({
+                        lang: 'cn',
+                        cnt: $('#cnt-cn').val()
+                    });
+                }
+                // 일본어가 체크된 경우
+                if ($('#checkboxjpForNull').prop('checked')) {
+                    formData.termDtlList.push({
+                        lang: 'jp',
+                        cnt: $('#cnt-jp').val()
+                    });
+                }
+                $.ajax({
+                    type: "post",
+                    //data: JSON.stringify(formsubmitArray[0]),
+                    // data: {
+                    //   "type" :"test용"
+                    // },
+                    data: JSON.stringify(formData),
+                    contentType:"application/json; charset=UTF-8",
+                    url: "/terms/register",
+                    dataType:'json',
+                    timeout: 10000,
+                    success: function (result) {
+                        console.log('result값:' + result);
+                        if(result > 0 ) {
+                            alert("업로드 성공!!");
+                            location.href = '/terms/';
+                        } else {
+                            alert("업로드 실패!!");
+                            location.href = '/terms/';
+                        }
+                    },
+                    error: function() {
+                        alert(" 작업 오류!!! 다시 실행해 주세요!");
+                        location.href = '/terms/';
+                    }
+                });
+            } else {
+
+            }
          });
 /*-----------------------------------------공통--------------------------------------------------------*/
     // 초기페이지 국문 노출!

@@ -17,10 +17,12 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class JdbcTermRepository implements TermRepository {
 
+    //private final EntityManager em;
 
     //public JdbcTermRepository(DataSource dataSource) {
     //    this.dataSource = dataSource;
     //}
+
     private final DataSource dataSource;
 
     /* --------------------------------------------------게시글  수 카운트-------------------------------------------------------------------*/
@@ -39,7 +41,7 @@ public class JdbcTermRepository implements TermRepository {
 /*-----------------------------------------------------게시글 전체 가져오기 ---------------------------------------------------------------*/
     @Override
     public List<Term> findAll() {
-        String sql = "select * from TERM_MST";
+        String sql = "SELECT * FROM TERM_MST";
 
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
 
@@ -71,7 +73,7 @@ public class JdbcTermRepository implements TermRepository {
     @Override
     public List<Term> findAll(PageInfo pi) {
         int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
-        String sql = "select * from TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? rows fetch next ? rows only";
+        String sql = "SELECT * FROM TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
 
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, offset);
@@ -108,7 +110,7 @@ public class JdbcTermRepository implements TermRepository {
 /*------------------------------------------상세 페이지-----------------------------------------*/
     @Override
     public Term findOne(int no) {
-        String sql = "select * from TERM_MST where TERM_NO =?";
+        String sql = "SELECT * FROM TERM_MST WHERE TERM_NO =?";
 
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, no);
@@ -137,7 +139,7 @@ public class JdbcTermRepository implements TermRepository {
     @Override
     public TermDtl findConts(int no, String lang) {
 
-        String sql = "select* from TERM_DTL WHERE TERM_NO =? and term_lang = ?";
+        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =? AND term_lang = ?";
 
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, no);
@@ -163,7 +165,7 @@ public class JdbcTermRepository implements TermRepository {
     @Override
     public List<TermDtl> findConts(int no) {
 
-        String sql = "select* from TERM_DTL WHERE TERM_NO =?";
+        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =?";
         List<TermDtl> list = new ArrayList<TermDtl>();
 
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
@@ -185,51 +187,128 @@ public class JdbcTermRepository implements TermRepository {
 
     }
 
-    /*--------------------------------------신규 등록----------------------------------------------*/
+    /*--------------------------------------신규 등록 (Ver. manual-commit) ----------------------------------------------*/
+    @Override
     public int register(Term term) {
-        String insertTermSql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
-        String insertTermDtlSql = "INSERT INTO TERM_DTL (TERM_no, TERM_LANG, TERM_CNT) VALUES (?, ?, ?)";
 
+        Connection conn = null;
         int termNo = 0;
 
-        try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"})) {
-                pst.setString(1, term.getType());
-                pst.setString(2, term.getYn());
-                pst.setString(3, "2021-01-01");
-                pst.setString(4, "2021-01-02");
-                pst.setString(5, "김철수");
+        try {
+           conn =  DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234");
 
-                int rs = pst.executeUpdate();
-                if (rs > 0) {
-                    ResultSet key = pst.getGeneratedKeys();
+            //트랜잭션 시작 // 자동 커밋 기능 off
+            conn.setAutoCommit(false);
+
+            //1. Term_mst insert
+            String insertTermSql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
+
+                PreparedStatement pst1 = conn.prepareStatement(insertTermSql, new String[]{"term_no"});
+                pst1.setString(1, term.getType());
+                pst1.setString(2, term.getYn());
+                pst1.setString(3, term.getStartDate());
+                pst1.setString(4, term.getEndDate());
+                pst1.setString(5, "이형주");
+
+                int rs = pst1.executeUpdate();
+
+                if (rs > 0 ) {
+                    ResultSet key = pst1.getGeneratedKeys();
                     if (key.next()) {
                         termNo = key.getInt(1);
                     } else {
                         throw new SQLException("termNo값 얻기 실패");
                     }
                 } else {
-                    throw new SQLException("term insert  실패");
+                    throw new SQLException("Term data 등록실패");
                 }
-            }
+                pst1.close();
 
-            try (PreparedStatement pst = conn.prepareStatement(insertTermDtlSql)) {
+
+            //2. Term_dtl insert
+            String insertTermDtlSql = "INSERT INTO TERM_DTL (TERM_no, TERM_LANG, TERM_CNT) VALUES (?, ?, ?)";
+                PreparedStatement pst2 = conn.prepareStatement(insertTermDtlSql);
+
                 for (TermDtl termDtl : term.getTermDtlList()) {
-                    pst.setInt(1, termNo);
-                    pst.setString(2, termDtl.getLang());
-                    pst.setString(3, termDtl.getCnt());
-                    pst.executeUpdate();
+                    pst2.setInt(1, termNo);
+                    pst2.setString(2, termDtl.getLang());
+                    pst2.setString(3, termDtl.getCnt());
+                    pst2.executeUpdate();
+                }
+                pst2.close();
+
+            //수동 커밋
+            conn.commit();
+            System.out.println("업로드 성공");
+
+        } catch (Exception e) {
+            try {
+                System.out.println("업로드 실패 - rollback");
+                conn.rollback();
+            } catch (SQLException ex) {
+                System.out.println("rollback - rollback 실패");
+                throw new RuntimeException(ex);
+            }
+       //트랜잭션 끝
+        }  finally {
+            if(conn != null) {
+                try {
+                    // 자동 커밋 기능 on
+                    conn.setAutoCommit(true);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
-
-            return termNo;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
         }
+        return termNo ;
     }
 
+    /*--------------------------------------신규 등록 (Ver. auto-commit) ----------------------------------------------*/
+//    @Override
+//    public int register(Term term) {
+//        String insertTermSql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
+//        String insertTermDtlSql = "INSERT INTO TERM_DTL (TERM_no, TERM_LANG, TERM_CNT) VALUES (?, ?, ?)";
+//
+//        int termNo = 0;
+//
+//        try (Connection conn = dataSource.getConnection()) {
+//            try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"})) {
+//                pst.setString(1, term.getType());
+//                pst.setString(2, term.getYn());
+//                pst.setString(3, term.getStartDate());
+//                pst.setString(4, term.getEndDate());
+//                pst.setString(5, "이형주");
+//
+//                int rs = pst.executeUpdate();
+//                if (rs > 0) {
+//                    ResultSet key = pst.getGeneratedKeys();
+//                    if (key.next()) {
+//                        termNo = key.getInt(1);
+//                    } else {
+//                        throw new SQLException("termNo값 얻기 실패");
+//                    }
+//                } else {
+//                    throw new SQLException("term insert  실패");
+//                }
+//            }
+//
+//            try (PreparedStatement pst = conn.prepareStatement(insertTermDtlSql)) {
+//                for (TermDtl termDtl : term.getTermDtlList()) {
+//                    pst.setInt(1, termNo);
+//                    pst.setString(2, termDtl.getLang());
+//                    pst.setString(3, termDtl.getCnt());
+//                    pst.executeUpdate();
+//                }
+//            }
+//
+//            return termNo;
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//            throw new RuntimeException(ex);
+//        }
+//    }
 
+    /*--------------------------------------신규 등록 (term / termDTL이 각각 commit됨.)----------------------------------------------*/
    /* @Override
     public register(Term term) {
         String sql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
@@ -239,8 +318,8 @@ public class JdbcTermRepository implements TermRepository {
         try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql , new String[]{"term_no"})) {
             pst.setString(1, term.getType());
             pst.setString(2, term.getYn());
-            //pst.setString(3, term.getStartDate());
-            //pst.setString(4, term.getEndDate());
+            pst.setString(3, term.getStartDate());
+            pst.setString(4, term.getEndDate());
 
             pst.setString(3, "2021-01-01");
             pst.setString(4, "2021-01-02");

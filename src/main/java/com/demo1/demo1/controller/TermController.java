@@ -57,15 +57,15 @@ public class TermController {
 
 
 
-    /*-----------------------------------------검색------------------------------------------------*/
+    /*-----------------------------------------검색 search------------------------------------------------*/
     @PostMapping("/search")
     public String search(@RequestParam(value="searchType") String searchType,
                          Term term, Model model) {
 
         List<Term> terms = termService.search(term, searchType);
-        System.out.println(terms.toString());
 
         model.addAttribute("terms", terms);
+        model.addAttribute ("searchType", searchType);
         return "home";
     }
 
@@ -78,7 +78,7 @@ public class TermController {
 
         if(strNo.isPresent()) { // 상세페이지
             int no = Integer.parseInt(strNo.get());
-            List<TermDtl> list = new ArrayList<>();
+//            List<TermDtl> list = new ArrayList<>();
     /*--------------9.20 수정 전 코드----------------------*/
 //            list.add(termService.findConts(no, "ko"));
 //            list.add(termService.findConts(no, "en"));
@@ -96,7 +96,6 @@ public class TermController {
             model.addAttribute("list" , null);
             return "/terms/detail";
         }
-
     }
 
     /*------------------------------상세 페이지 - 언어별 (ajax)--------------------------------------*/
@@ -120,7 +119,7 @@ public class TermController {
 
     /*--------------------------------------신규 등록 (ajax-form-serialize)----------------------------------------------*/
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    @Transactional
+    //@Transactional
     @ResponseBody
     public int register (@RequestBody Term term) {
     //public int register (@RequestParam (value= "type") String type) {

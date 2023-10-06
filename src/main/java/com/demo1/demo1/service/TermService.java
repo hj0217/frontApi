@@ -12,15 +12,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class TermService {
+
+    //private final JdbcTermRepository jdbcTermRepository;
     private final JdbcTermRepository jdbcTermRepository;
 
-   /* @Autowired
-    public TermService (JdbcTermRepository jdbcTermRepository) {
-        this.jdbcTermRepository = jdbcTermRepository;
-    }
-    */
+//   @Autowired
+//    public TermService (JpaTermRepository jdbcTermRepository) {
+//        this.jdbcTermRepository = jdbcTermRepository;
+//    }
+
 
     /*-------------------------- Total Page 구하기-------------------------*/
     public int listCount () {
@@ -48,6 +49,7 @@ public class TermService {
     public List<Term> search(Term term, String category) {return jdbcTermRepository.search(term, category);}
 
     /*------------------------------ 등록  ------------------------------------*/
+    @Transactional
     public int register(Term term) {return jdbcTermRepository.register(term);}
 
 }

@@ -331,8 +331,9 @@
 // ajax로 form 제출하기
         $('#submitbtn').on ('click' , function() {
 
-            //var formsubmit = $('form').serialize(); // form값들을 queryString형태로 만들어줌
-            //console.log(JSON.stringify(formsubmit));
+            // var formsubmit = $('form').serialize(); // form값들을 queryString형태로 만들어줌
+            // console.log(formsubmit);
+            // console.log(JSON.stringify(formsubmit));
 
             if(check() === true) {
                 var formData = {
@@ -412,8 +413,10 @@
     function cntControll (lang) {
 
         if (lang === 'ko') {
-            $("#cnt-ko").css('display','block');
-            $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
+            // $("#cnt-ko").css('display','block');
+            // $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
+            $("#cnt-ko").show();
+            $("#cnt-en, #cnt-cn, #cnt-jp").hide();
 
         } else if (lang === 'en') {
             $("#cnt-ko, #cnt-cn, #cnt-jp").css('display','none');

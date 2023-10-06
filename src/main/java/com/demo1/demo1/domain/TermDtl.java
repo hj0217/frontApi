@@ -10,8 +10,8 @@ import lombok.Setter;
 @ToString
 public class TermDtl {
 
+
     private int no;
     private String lang;
     private String cnt;
-
 }

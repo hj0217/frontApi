@@ -17,8 +17,6 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class JdbcTermRepository implements TermRepository {
 
-    //private final EntityManager em;
-
     //public JdbcTermRepository(DataSource dataSource) {
     //    this.dataSource = dataSource;
     //}
@@ -127,6 +125,7 @@ public class JdbcTermRepository implements TermRepository {
                     term.setRgstDate(rs.getString("Term_rgst_date"));
                     term.setMdfBy(rs.getString("Term_mdf_by"));
                     term.setMdfDate(rs.getString("Term_mdf_date"));
+
                 }
                 return term;
             }

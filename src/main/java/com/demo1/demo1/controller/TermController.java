@@ -32,25 +32,22 @@ public class TermController {
 
 
 //페이징 처리완료
-    @RequestMapping("/")
-    public String home(@RequestParam(value = "boardLimit", required=false, defaultValue = "30") String boardLimitStr,
-                       @RequestParam(value = "pageNum", required=false, defaultValue = "1") String pageNumStr,
+    @GetMapping("/")
+    public String home(@RequestParam(value = "boardLimit", required=false, defaultValue = "30") int boardLimit,
+                       @RequestParam(value = "pageNum", required=false, defaultValue = "1") int pageNum,
                        Model model) {
 
         // 검색 조건 확인 (검색결과 몇개 출력 / 현재 페이지 번호 / 검색 조건 (Term)
-        int boardLimit = Integer.parseInt(boardLimitStr);
-        int PageNum = Integer.parseInt(pageNumStr);
-
 
         ////전체 게시글 구하기
         int listCount = termService.listCount();
         int pageLimit = 5;	// 보여질 페이지 수(하단 페이지 번호)
 
-        PageInfo pi = Pagination.getPageInfo(listCount, PageNum, pageLimit, boardLimit);
+        PageInfo pageInfo = Pagination.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
 
-        List<Term> terms = termService.findAll(pi);
+        List<Term> terms = termService.findAll(pageInfo);
         model.addAttribute("terms", terms);
-        model.addAttribute("pi", pi);
+        model.addAttribute("pi", pageInfo);
 
         return "home";
     }
@@ -72,8 +69,7 @@ public class TermController {
 
     /*------------------------------등록 페이지 & 상세 페이지--------------------------------------*/
     @RequestMapping(value = {"/detail/" , "/detail/{strNo}"})
-    public String detail(@RequestParam(value="page", required = false) String page,
-                         @PathVariable("strNo") Optional<String> strNo,
+    public String detail(@PathVariable("strNo") Optional<String> strNo,
                          Model model) {
 
         if(strNo.isPresent()) { // 상세페이지
@@ -109,7 +105,6 @@ public class TermController {
 
 
     /*--------------------------------------신규 등록----------------------------------------------*/
-//    @Transactional
 //    @PostMapping("/register")
 //    public String register(Term term) {
 //
@@ -118,8 +113,7 @@ public class TermController {
 //    }
 
     /*--------------------------------------신규 등록 (ajax-form-serialize)----------------------------------------------*/
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    //@Transactional
+    @PostMapping(value = "/register")
     @ResponseBody
     public int register (@RequestBody Term term) {
     //public int register (@RequestParam (value= "type") String type) {

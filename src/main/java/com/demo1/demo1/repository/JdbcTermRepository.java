@@ -22,13 +22,17 @@ public class JdbcTermRepository implements TermRepository {
     //}
 
     private final DataSource dataSource;
+    private final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
+    private final String DB_ID = "SYSTEM";
+    private final String DB_PW = "1234";
+
 
     /* --------------------------------------------------게시글  수 카운트-------------------------------------------------------------------*/
     @Override
     public int listCount () {
         String sql = "SELECT COUNT(*) FROM TERM_MST";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
             return rs.next() ? rs.getInt(1) : 0;
 
         }catch (Exception e) {
@@ -41,7 +45,7 @@ public class JdbcTermRepository implements TermRepository {
     public List<Term> findAll() {
         String sql = "SELECT * FROM TERM_MST";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
 
             List<Term> terms = new ArrayList<>();
 
@@ -73,7 +77,7 @@ public class JdbcTermRepository implements TermRepository {
         int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
         String sql = "SELECT * FROM TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, offset);
             pst.setInt(2,pi.getBoardLimit());
 
@@ -110,7 +114,7 @@ public class JdbcTermRepository implements TermRepository {
     public Term findOne(int no) {
         String sql = "SELECT * FROM TERM_MST WHERE TERM_NO =?";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, no);
 
             try (ResultSet rs = pst.executeQuery();) {
@@ -140,7 +144,7 @@ public class JdbcTermRepository implements TermRepository {
 
         String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =? AND term_lang = ?";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, no);
             pst.setString(2, lang);
 
@@ -167,7 +171,7 @@ public class JdbcTermRepository implements TermRepository {
         String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =?";
         List<TermDtl> list = new ArrayList<TermDtl>();
 
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
             pst.setInt(1, no);
 
             try (ResultSet rs = pst.executeQuery()) {
@@ -194,7 +198,7 @@ public class JdbcTermRepository implements TermRepository {
         int termNo = 0;
 
         try {
-           conn =  DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234");
+           conn =  DriverManager.getConnection(DB_URL, DB_ID, DB_PW);
 
             //트랜잭션 시작 // 자동 커밋 기능 off
             conn.setAutoCommit(false);
@@ -367,7 +371,7 @@ public class JdbcTermRepository implements TermRepository {
         List<Term> terms = new ArrayList<>();
         String sql = "";
 
-        if (term.getType().equals("이용약관") || term.getType().equals("개인정보취급방침") || term.getType().equals("회원가입 동의") || term.getType().equals("주문동의")) { //검색 시 타입 미설정 시 "전체"로 검색
+        if ("이용약관".equals(term.getType())|| "개인정보취급방침".equals(term.getType()) || "회원가입 동의".equals(term.getType()) || "주문동의".equals(term.getType())) { //검색 시 타입 미설정 시 "전체"로 검색
 
             switch (categoty) {
                 case "전시 시작일" :
@@ -380,9 +384,11 @@ public class JdbcTermRepository implements TermRepository {
                 case "수정일" :
                     sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
                     break;
+                default:
+                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')"; // 임의
             }
 
-            try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
 
                 pst.setString(1, term.getType());
                 pst.setString(2, term.getYn());
@@ -423,10 +429,11 @@ public class JdbcTermRepository implements TermRepository {
                 case "수정일" :
                     sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
                     break;
+                default:  sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
             }
 
 
-            try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "SYSTEM", "1234"); PreparedStatement pst = conn.prepareStatement(sql);) {
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
 
                 pst.setString(1, term.getYn());
                 pst.setString(2, term.getStartDate());
@@ -434,17 +441,17 @@ public class JdbcTermRepository implements TermRepository {
                 ResultSet rs = pst.executeQuery();
                 if (rs != null) {
                     while (rs.next()) {
-                        Term termrs = new Term();
-                        termrs.setNo(rs.getInt("Term_no"));
-                        termrs.setType(rs.getString("Term_type"));
-                        termrs.setYn(rs.getString("Term_yn"));
-                        termrs.setStartDate(rs.getString("Term_startDate"));
-                        termrs.setEndDate(rs.getString("Term_endDate"));
-                        termrs.setRgstBy(rs.getString("Term_rgst_by"));
-                        termrs.setRgstDate(rs.getString("Term_rgst_date"));
-                        termrs.setMdfBy(rs.getString("Term_mdf_by"));
-                        termrs.setMdfDate(rs.getString("Term_mdf_date"));
-                        terms.add(termrs);
+                        Term termRs = new Term();
+                        termRs.setNo(rs.getInt("Term_no"));
+                        termRs.setType(rs.getString("Term_type"));
+                        termRs.setYn(rs.getString("Term_yn"));
+                        termRs.setStartDate(rs.getString("Term_startDate"));
+                        termRs.setEndDate(rs.getString("Term_endDate"));
+                        termRs.setRgstBy(rs.getString("Term_rgst_by"));
+                        termRs.setRgstDate(rs.getString("Term_rgst_date"));
+                        termRs.setMdfBy(rs.getString("Term_mdf_by"));
+                        termRs.setMdfDate(rs.getString("Term_mdf_date"));
+                        terms.add(termRs);
                     }
                 }
                 return terms;

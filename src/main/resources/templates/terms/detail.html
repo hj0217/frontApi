@@ -26,7 +26,7 @@
     <h2 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h2>
 
         <!--<form name="form" id="form" method="post" onsubmit="return check()">-->
-        <form name="form" id="form" method="post">
+        <!--<form name="form" id="form" method="post">-->
         <input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0 }"/>
 
 
@@ -74,19 +74,19 @@
             <div th:each="item : ${list}">
                     <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
             </div>
-            <th:block th:if="${term != null}">
-                <label><input type="checkbox" id="checkboxko" value="ko"  th:disabled="${term != null}"/>국문</label>
-                <label><input type="checkbox" id="checkboxen" value="en"  th:disabled="${term != null}"/>영문</label>
-                <label><input type="checkbox" id="checkboxcn" value="cn"  th:disabled="${term != null}"/>중문</label>
-                <label><input type="checkbox" id="checkboxjp" value="jp"  th:disabled="${term != null}"/>일문</label>
-            </th:block>
+<!--            <th:block th:if="${term != null}">-->
+                <label><input type="checkbox" id="checkboxko"  name="checkbox" value="ko"  th:disabled="${term != null}"/>국문</label>
+                <label><input type="checkbox" id="checkboxen"  name="checkbox" value="en"  th:disabled="${term != null}"/>영문</label>
+                <label><input type="checkbox" id="checkboxcn"  name="checkbox" value="cn"  th:disabled="${term != null}"/>중문</label>
+                <label><input type="checkbox" id="checkboxjp"  name="checkbox" value="jp"  th:disabled="${term != null}"/>일문</label>
+<!--            </th:block>-->
 
-            <th:block th:unless="${term != null}">
-                <label><input type="checkbox"  id="checkboxkoForNull"  value="ko" />국문</label>
-                <label><input type="checkbox"  id="checkboxenForNull"  value="en" />영문</label>
-                <label><input type="checkbox"  id="checkboxcnForNull"  value="cn" />중문</label>
-                <label><input type="checkbox"  id="checkboxjpForNull"  value="jp" />일문</label>
-            </th:block>
+<!--            <th:block th:unless="${term != null}">-->
+<!--                <label><input type="checkbox"  id="checkboxkoForNull"  value="ko" />국문</label>-->
+<!--                <label><input type="checkbox"  id="checkboxenForNull"  value="en" />영문</label>-->
+<!--                <label><input type="checkbox"  id="checkboxcnForNull"  value="cn" />중문</label>-->
+<!--                <label><input type="checkbox"  id="checkboxjpForNull"  value="jp" />일문</label>-->
+<!--            </th:block>-->
 
         </div>
 
@@ -110,8 +110,8 @@
                         <td class="option">약관 내용</td>
                         <td colspan="4">
                             <div id="parentTextarea">
-                                <th:block th:if="${term != null}" th:each="item : ${list}">
-                                        <textarea name="" th:id="'cnt-'+${item.getLang()}" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
+                                <th:block th:each="item : ${list}">
+                                        <textarea name="" th:id="'cnt-'+${item.getLang()}" class="hidden" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
                                 </th:block>
                             </div>
 
@@ -166,7 +166,7 @@
             </th:block>
         </div>
 
-    </form>
+<!--    </form>-->
 
 </div> <!-- end of container-->
 
@@ -218,24 +218,24 @@
         if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
             $("#checkboxko").prop("checked", true);
         } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우
-            $('#parentTextarea').append('<textarea id ="cnt-ko" rows="10" cols="100"></textarea>');
+            $('#parentTextarea').append('<textarea id ="cnt-ko" class="hidden" rows="10" cols="100"></textarea>');
         }
         if ($('#hiddenen').length) {
             $("#checkboxen").prop("checked", true);
         } else {
-            $('#parentTextarea').append('<textarea id ="cnt-en" rows="10" cols="100"></textarea>');
+            $('#parentTextarea').append('<textarea id ="cnt-en" class="hidden" rows="10" cols="100"></textarea>');
         }
 
         if ($('#hiddencn').length) {
             $("#checkboxcn").prop("checked",  true);
         } else {
-            $('#parentTextarea').append('<textarea id ="cnt-cn" rows="10" cols="100"></textarea>');
+            $('#parentTextarea').append('<textarea id ="cnt-cn" class="hidden" rows="10" cols="100"></textarea>');
         }
 
         if ($('#hiddenjp').length) {
             $("#checkboxjp").prop("checked",  true);
         } else {
-            $('#parentTextarea').append('<textarea id ="cnt-jp" rows="10" cols="100"></textarea>');
+            $('#parentTextarea').append('<textarea id ="cnt-jp" class="hidden" rows="10" cols="100"></textarea>');
         }
 
 /* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
@@ -258,21 +258,38 @@
         var isTextareaCn = false;
         var isTextareaJp = false;
 
-        if ($('#checkboxkoForNull').prop('checked')) {
+        // if ($('#checkboxkoForNull').prop('checked')) {
+        //     isTextareaKo = isEmpty($('#cnt-ko').val());
+        // }
+        //
+        // if ($('#checkboxenForNull').prop('checked')) {
+        //     isTextareaEn = isEmpty($('#cnt-en').val());
+        // }
+        //
+        // if ($('#checkboxcnForNull').prop('checked')) {
+        //     isTextareaCn = isEmpty($('#cnt-cn').val());
+        // }
+        //
+        // if ($('#checkboxjpForNull').prop('checked')) {
+        //     isTextareaJp = isEmpty($('#cnt-jp').val());
+        // }
+
+        if ($('#checkboxko').prop('checked')) {
             isTextareaKo = isEmpty($('#cnt-ko').val());
         }
 
-        if ($('#checkboxenForNull').prop('checked')) {
+        if ($('#checkboxen').prop('checked')) {
             isTextareaEn = isEmpty($('#cnt-en').val());
         }
 
-        if ($('#checkboxcnForNull').prop('checked')) {
+        if ($('#checkboxcn').prop('checked')) {
             isTextareaCn = isEmpty($('#cnt-cn').val());
         }
 
-        if ($('#checkboxjpForNull').prop('checked')) {
+        if ($('#checkboxjp').prop('checked')) {
             isTextareaJp = isEmpty($('#cnt-jp').val());
         }
+
 
         var check1 = isType;
         //var check2 = is_yn;
@@ -293,11 +310,12 @@
 
 
     //enter key 입력 --> form 제출 X
-    $('#form').on ('keydown', evt => {
-        if(evt.code === "Enter" || evt.keyCode === 13) {
-            evt.preventDefault();
-        }
-    });
+    //비동기 Input제출 하기 때문에 엔터키 방지 필요 x
+    // $('#form').on ('keydown', evt => {
+    //     if(evt.code === "Enter" || evt.keyCode === 13) {
+    //         evt.preventDefault();
+    //     }
+    // });
 
     //checkbox 필수여부 값보내기 (checkbox는 미선택 시 아예 값도 안넘어감.)
     $("#yn").change(function() {
@@ -306,26 +324,28 @@
     });
 
 
-    var arr = [];
 
-    $("#checkboxkoForNull,#checkboxenForNull, #checkboxcnForNull, #checkboxjpForNull ").change(function() {
-        var selectedLang = $(this).val();
-        arr.push(selectedLang);
-        $(this).attr('name', 'termDtlList['+arr.length+'].lang');
 
-        if (selectedLang ==="ko") {
-            $("#cnt-ko").attr('name', 'termDtlList['+arr.length+'].cnt');
-        }
-        if (selectedLang === "en") {
-            $("#cnt-en").attr('name', 'termDtlList['+arr.length+'].cnt');
-        }
-        if (selectedLang === "cn") {
-            $("#cnt-cn").attr('name', 'termDtlList['+arr.length+'].cnt');
-        }
-        if (selectedLang === "jp") {
-            $("#cnt-jp").attr('name', 'termDtlList['+arr.length+'].cnt');
-        }
-    });
+    //$("#checkboxkoForNull,#checkboxenForNull, #checkboxcnForNull, #checkboxjpForNull ").change(function() {
+    // $("#checkboxko,#checkboxen, #checkboxcn, #checkboxjp").change(function() {
+    //     var selectedLang = $(this).val();
+    //     selectedLangArr.push(selectedLang);
+    //     $(this).attr('name', 'termDtlList['+selectedLangArr.length+'].lang');
+    //
+    //     if (selectedLang ==="ko") {
+    //         $("#cnt-ko").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+    //     }
+    //     if (selectedLang === "en") {
+    //         $("#cnt-en").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+    //     }
+    //     if (selectedLang === "cn") {
+    //         $("#cnt-cn").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+    //     }
+    //     if (selectedLang === "jp") {
+    //         $("#cnt-jp").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+    //     }
+    // });
+
 
 
 // ajax로 form 제출하기
@@ -335,7 +355,8 @@
             // console.log(formsubmit);
             // console.log(JSON.stringify(formsubmit));
 
-            if(check() === true) {
+            if(check()) {
+
                 var formData = {
                     type: $('#type').val(),
                     yn: $('#_yn').val(),
@@ -344,34 +365,57 @@
                     termDtlList: []
                 };
 
-                // 한국어가 체크된 경우
-                if ($('#checkboxkoForNull').prop('checked')) {
+            var selectedLangArr = [];
+                //선택 언어 count
+               $("input:checkbox[name=checkbox]:checked").each(function () {
+                   selectedLangArr.push($(this).val());
+                });
+
+                for(const lang of selectedLangArr) {
+                    //선택 언어 name 설정
+                    $("#checkbox"+lang).attr('name', 'termDtlList['+selectedLangArr.length+'].lang');
+                    $("#cnt-"+lang).attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+
+                    //선택언어  DataForm에 넣기
                     formData.termDtlList.push({
-                        lang: 'ko',
-                        cnt: $('#cnt-ko').val()
+                            lang: lang,
+                            cnt: $('#cnt-'+ lang).val()
                     });
                 }
-                // 영어가 체크된 경우
-                if ($('#checkboxenForNull').prop('checked')) {
-                    formData.termDtlList.push({
-                        lang: 'en',
-                        cnt: $('#cnt-en').val()
-                    });
-                }
-                // 중국어가 체크된 경우
-                if ($('#checkboxcnForNull').prop('checked')) {
-                    formData.termDtlList.push({
-                        lang: 'cn',
-                        cnt: $('#cnt-cn').val()
-                    });
-                }
-                // 일본어가 체크된 경우
-                if ($('#checkboxjpForNull').prop('checked')) {
-                    formData.termDtlList.push({
-                        lang: 'jp',
-                        cnt: $('#cnt-jp').val()
-                    });
-                }
+
+                // // 한국어가 체크된 경우
+                // //if ($('#checkboxkoForNull').prop('checked')) {
+                // if ($('#checkboxko').prop('checked')) {
+                //     formData.termDtlList.push({
+                //         lang: 'ko',
+                //         cnt: $('#cnt-ko').val()
+                //     });
+                // }
+                // // 영어가 체크된 경우
+                // //if ($('#checkboxenForNull').prop('checked')) {
+                // if ($('#checkboxen').prop('checked')) {
+                //     formData.termDtlList.push({
+                //         lang: 'en',
+                //         cnt: $('#cnt-en').val()
+                //     });
+                // }
+                // // 중국어가 체크된 경우
+                // //if ($('#checkboxcnForNull').prop('checked')) {
+                // if ($('#checkboxcn').prop('checked')) {
+                //     formData.termDtlList.push({
+                //         lang: 'cn',
+                //         cnt: $('#cnt-cn').val()
+                //     });
+                // }
+                // // 일본어가 체크된 경우
+                // //if ($('#checkboxjpForNull').prop('checked')) {
+                // if ($('#checkboxjp').prop('checked')) {
+                //     formData.termDtlList.push({
+                //         lang: 'jp',
+                //         cnt: $('#cnt-jp').val()
+                //     });
+                // }
+
                 $.ajax({
                     type: "post",
                     //data: JSON.stringify(formsubmitArray[0]),
@@ -398,42 +442,45 @@
                         location.href = '/terms/';
                     }
                 });
-            } else {
-
             }
+            /*else {
+            }*/
          });
 /*-----------------------------------------공통--------------------------------------------------------*/
     // 초기페이지 국문 노출!
-
-        $("#cnt-ko").css('display','block');
-        $("#cnt-en,#cnt-cn,#cnt-jp").css('display','none');
-
+        $("#parentTextarea").find(".hidden").hide();
+        $("#cnt-ko").show();
+        // $("#cnt-ko").css('display','block');
+        // $("#cnt-en,#cnt-cn,#cnt-jp").css('display','none');
 
     // textarea 컨트롤
     function cntControll (lang) {
-
-        if (lang === 'ko') {
-            // $("#cnt-ko").css('display','block');
-            // $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
-            $("#cnt-ko").show();
-            $("#cnt-en, #cnt-cn, #cnt-jp").hide();
-
-        } else if (lang === 'en') {
-            $("#cnt-ko, #cnt-cn, #cnt-jp").css('display','none');
-            $("#cnt-en").css('display','block');
-
-
-        } else if (lang === 'cn') {
-            $("#cnt-ko,#cnt-en,#cnt-jp" ).css('display','none');
-            $("#cnt-cn").css('display','block');
-
-        } else {
-            $("#cnt-ko, #cnt-en, #cnt-cn").css('display','none');
-            $("#cnt-jp").css('display','block');
-
-        }
+        $("#parentTextarea").find('.hidden').hide();
+        $("#cnt-" + lang).show();
     }
 
+    // function cntControll (lang) {
+    //     if (lang === 'ko') {
+    //         // $("#cnt-ko").css('display','block');
+    //         // $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
+    //         // $("#cnt-" + lang).show();
+    //         // $("#cnt-en, #cnt-cn, #cnt-jp").hide();
+
+    //
+    //     } else if (lang === 'en') {
+    //         $("#cnt-en").show();
+    //         $("#cnt-ko, #cnt-cn, #cnt-jp").hide();
+    //
+    //     } else if (lang === 'cn') {
+    //         $("#cnt-cn").show();
+    //         $("#cnt-ko,#cnt-en,#cnt-jp" ).hide();
+    //
+    //
+    //     } else {
+    //         $("#cnt-jp").show();
+    //         $("#cnt-ko, #cnt-en, #cnt-cn").hide();
+    //     }
+    // }
 
 /* -----------------------------------------달력 --------------------------------------*/
     var startDate= new Date();

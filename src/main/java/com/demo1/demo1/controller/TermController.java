@@ -116,16 +116,13 @@ public class TermController {
     @PostMapping(value = "/register")
     @ResponseBody
     public int register (@RequestBody Term term) {
-    //public int register (@RequestParam (value= "type") String type) {
-        System.out.println(term.getNo());
-        System.out.println(term.getType());
-        System.out.println(term.getYn());
-        System.out.println(term.getStartDate());
-        System.out.println(term.getEndDate());
-        System.out.println(term.getTermDtlList().get(0).getCnt());
-
-        //System.out.println(type);
-        //return 1;
+        System.out.println(term);
+//        System.out.println(term.getNo());
+//        System.out.println(term.getType());
+//        System.out.println(term.getYn());
+//        System.out.println(term.getStartDate());
+//        System.out.println(term.getEndDate());
+//        System.out.println(term.getTermDtlList().get(0).getCnt());
         return termService.register(term);
     }
 }

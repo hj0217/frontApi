@@ -12,8 +12,6 @@ public class SpringConfig {
 
     private final DataSource dataSource;
 
-
-
 //    @Bean
 //    public TermService termService() {
 //        return new TermService(termRepository());

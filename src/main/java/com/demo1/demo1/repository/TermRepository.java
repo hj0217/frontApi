@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TermRepository {
 
-    List<Term> findAll();
+    List<Term> findAll() throws SQLException;
     List<Term> findAll(PageInfo pi);
     List<Term> search(Term term, String category);
 
@@ -19,7 +19,7 @@ public interface TermRepository {
 
     List<TermDtl> findConts(int no);
 
-    int register(Term term);
+    //int register(Term term);
 
     int listCount();
 }

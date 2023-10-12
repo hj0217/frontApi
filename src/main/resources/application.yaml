@@ -1,15 +1,23 @@
 
 spring:
   datasource:
-    driver-class-name: oracle.jdbc.driver.OracleDriver
     url: jdbc:oracle:thin:@localhost:1521/xe
     username: System
     password: 1234
-  jpa:
-    show-sql: true
-    hibernate.ddl-auto: none
+    hikari:
+      data-source-class-name: oracle.jdbc.OracleDriver
+      connection-test-query: SELECT 1
+#      maximum-pool-size: 8
+#      connection-timeout: 5000
+#      connection-init-sql: SELECT 1
+#      validation-timeout: 2000
+#      minimum-idle: 10
+#      idle-timeout: 600000
+#      max-lifetime: 1800000
+#      leakDetectionThreshold: 60000
+#      auto-commit: true
 
-
-logging:
-  config: classpath:log4j2.yaml
+#  jpa:
+#    show-sql: true
+#    hibernate.ddl-auto: none
 

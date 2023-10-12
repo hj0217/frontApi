@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.demo1.demo1.domain.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -49,7 +50,12 @@ public class TermService {
     public List<Term> search(Term term, String category) {return jdbcTermRepository.search(term, category);}
 
     /*------------------------------ 등록  ------------------------------------*/
-    @Transactional
-    public int register(Term term) {return jdbcTermRepository.register(term);}
+  /*  @Transactional
+    public int register(Term term) {return jdbcTermRepository.register(term);}*/
 
+    //수동 commit 구현 매소드
+    public int register(Term term) { // method 1개에 sql문 1개...
+        int termNo = jdbcTermRepository.registerTerm(term);
+        return jdbcTermRepository.registerTermDtl(term, termNo);
+    }
 }

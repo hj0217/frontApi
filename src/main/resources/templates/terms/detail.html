@@ -74,11 +74,12 @@
             <div th:each="item : ${list}">
                     <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
             </div>
+
 <!--            <th:block th:if="${term != null}">-->
-                <label><input type="checkbox" id="checkboxko"  name="checkbox" value="ko"  th:disabled="${term != null}"/>국문</label>
-                <label><input type="checkbox" id="checkboxen"  name="checkbox" value="en"  th:disabled="${term != null}"/>영문</label>
-                <label><input type="checkbox" id="checkboxcn"  name="checkbox" value="cn"  th:disabled="${term != null}"/>중문</label>
-                <label><input type="checkbox" id="checkboxjp"  name="checkbox" value="jp"  th:disabled="${term != null}"/>일문</label>
+                <label><input type="checkbox" id="checkboxko" class="checkbox" name="checkbox" value="ko"  th:disabled="${term != null}"/>국문</label>
+                <label><input type="checkbox" id="checkboxen" class="checkbox" name="checkbox" value="en"  th:disabled="${term != null}"/>영문</label>
+                <label><input type="checkbox" id="checkboxcn" class="checkbox" name="checkbox" value="cn"  th:disabled="${term != null}"/>중문</label>
+                <label><input type="checkbox" id="checkboxjp" class="checkbox" name="checkbox" value="jp"  th:disabled="${term != null}"/>일문</label>
 <!--            </th:block>-->
 
 <!--            <th:block th:unless="${term != null}">-->
@@ -215,28 +216,42 @@
 
 /*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
 
-        if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
-            $("#checkboxko").prop("checked", true);
-        } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우
-            $('#parentTextarea').append('<textarea id ="cnt-ko" class="hidden" rows="10" cols="100"></textarea>');
-        }
-        if ($('#hiddenen').length) {
-            $("#checkboxen").prop("checked", true);
-        } else {
-            $('#parentTextarea').append('<textarea id ="cnt-en" class="hidden" rows="10" cols="100"></textarea>');
+        const languages = [ ];
+        $(".checkbox").each(function () {
+           languages.push($(this).val())
+            console.log(languages.length);
+        });
+
+        for (const lang of languages) {
+            if ($(`#hidden${lang}`).length) {
+                $(`#checkbox${lang}`).prop('checked', true);
+            } else {
+                $('#parentTextarea').append(`<textarea id="cnt-${lang}" class="hidden" rows="10" cols="100"></textarea>`);
+            }
         }
 
-        if ($('#hiddencn').length) {
-            $("#checkboxcn").prop("checked",  true);
-        } else {
-            $('#parentTextarea').append('<textarea id ="cnt-cn" class="hidden" rows="10" cols="100"></textarea>');
-        }
-
-        if ($('#hiddenjp').length) {
-            $("#checkboxjp").prop("checked",  true);
-        } else {
-            $('#parentTextarea').append('<textarea id ="cnt-jp" class="hidden" rows="10" cols="100"></textarea>');
-        }
+        // if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
+        //     $("#checkboxko").prop("checked", true);
+        // } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우 // term = null
+        //     $('#parentTextarea').append('<textarea id ="cnt-ko" class="hidden" rows="10" cols="100"></textarea>');
+        // }
+        // if ($('#hiddenen').length) {
+        //     $("#checkboxen").prop("checked", true);
+        // } else {
+        //     $('#parentTextarea').append('<textarea id ="cnt-en" class="hidden" rows="10" cols="100"></textarea>');
+        // }
+        //
+        // if ($('#hiddencn').length) {
+        //     $("#checkboxcn").prop("checked",  true);
+        // } else {
+        //     $('#parentTextarea').append('<textarea id ="cnt-cn" class="hidden" rows="10" cols="100"></textarea>');
+        // }
+        //
+        // if ($('#hiddenjp').length) {
+        //     $("#checkboxjp").prop("checked",  true);
+        // } else {
+        //     $('#parentTextarea').append('<textarea id ="cnt-jp" class="hidden" rows="10" cols="100"></textarea>');
+        // }
 
 /* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
     //  null check
@@ -371,15 +386,16 @@
                    selectedLangArr.push($(this).val());
                 });
 
-                for(const lang of selectedLangArr) {
+                for(const i in selectedLangArr) {
+
                     //선택 언어 name 설정
-                    $("#checkbox"+lang).attr('name', 'termDtlList['+selectedLangArr.length+'].lang');
-                    $("#cnt-"+lang).attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
+                    $("#checkbox"+selectedLangArr[i]).attr('name', 'termDtlList['+ i +'].lang');
+                    $("#cnt-"+selectedLangArr[i]).attr('name', 'termDtlList['+ i +'].cnt');
 
                     //선택언어  DataForm에 넣기
                     formData.termDtlList.push({
-                            lang: lang,
-                            cnt: $('#cnt-'+ lang).val()
+                            lang: selectedLangArr[i],
+                            cnt: $('#cnt-'+ selectedLangArr[i]).val()
                     });
                 }
 

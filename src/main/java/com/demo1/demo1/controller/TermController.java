@@ -68,7 +68,7 @@ public class TermController {
 
 
     /*------------------------------등록 페이지 & 상세 페이지--------------------------------------*/
-    @RequestMapping(value = {"/detail/" , "/detail/{strNo}"})
+    @GetMapping(value = {"/detail/" , "/detail/{strNo}"})
     public String detail(@PathVariable("strNo") Optional<String> strNo,
                          Model model) {
 
@@ -117,12 +117,6 @@ public class TermController {
     @ResponseBody
     public int register (@RequestBody Term term) {
         System.out.println(term);
-//        System.out.println(term.getNo());
-//        System.out.println(term.getType());
-//        System.out.println(term.getYn());
-//        System.out.println(term.getStartDate());
-//        System.out.println(term.getEndDate());
-//        System.out.println(term.getTermDtlList().get(0).getCnt());
         return termService.register(term);
     }
 }

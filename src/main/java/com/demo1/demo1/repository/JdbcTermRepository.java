@@ -51,6 +51,7 @@ public class JdbcTermRepository implements TermRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql);
              ResultSet rs = pst.executeQuery();) {
+            System.out.println("repository find all pst: " + pst);
                 while (rs.next()) {
                     Term term = new Term();
                     term.setNo(rs.getInt("Term_no"));
@@ -194,12 +195,14 @@ public class JdbcTermRepository implements TermRepository {
             Connection conn = null;
 
             try {
+
+                //System.out.println("repositroy term 등록 까지 들어오나?? 확인용");
                 conn = dataSource.getConnection();
                 conn.setAutoCommit(false);
 
-                try (PreparedStatement pst = conn.prepareStatement(insertTermSql);) {
+                try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"});) {
 
-
+                    //System.out.println("repositroy pst  확인용: " + pst);
                     pst.setString(1, term.getType());
                     pst.setString(2, term.getYn());
                     pst.setString(3, term.getStartDate());
@@ -207,7 +210,6 @@ public class JdbcTermRepository implements TermRepository {
                     pst.setString(5, "이형주");
 
                     int rs = pst.executeUpdate();
-
                     if (rs > 0) {
                         ResultSet key = pst.getGeneratedKeys();
                         if (key.next()) {
@@ -249,12 +251,14 @@ public class JdbcTermRepository implements TermRepository {
 
             Connection conn = null;
             try {
+              //  System.out.println("repositroy termDtl 등록 까지 들어오나?? 확인용");
                     conn = dataSource.getConnection();
                     conn.setAutoCommit(false);
 
                 try(PreparedStatement pst = conn.prepareStatement(insertTermDtlSql);) {
 
                     for (TermDtl termDtl : term.getTermDtlList()) {
+                   //     System.out.println("repositroy 확인용 1");
                         pst.setInt(1, termNo);
                         pst.setString(2, termDtl.getLang());
                         pst.setString(3, termDtl.getCnt());
@@ -278,9 +282,9 @@ public class JdbcTermRepository implements TermRepository {
                    conn.setAutoCommit(true);
                    conn.close();
                 } catch (SQLException ex) {
-
                 }
             }
+            //System.out.println("repositroy 확인용 4 result: " + result);
             return  result;
         }
 

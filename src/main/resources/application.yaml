@@ -4,18 +4,19 @@ spring:
     url: jdbc:oracle:thin:@localhost:1521/xe
     username: System
     password: 1234
+    driver-class-name: oracle.jdbc.OracleDriver
+    type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      data-source-class-name: oracle.jdbc.OracleDriver
-      connection-test-query: SELECT 1
-#      maximum-pool-size: 8
-#      connection-timeout: 5000
-#      connection-init-sql: SELECT 1
-#      validation-timeout: 2000
-#      minimum-idle: 10
-#      idle-timeout: 600000
-#      max-lifetime: 1800000
-#      leakDetectionThreshold: 60000
-#      auto-commit: true
+      minimum-idle: 5
+      idle-timeout: 60000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: HikariCorePool
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: select * from information_schema.tables limit 1
+
+
 
 #  jpa:
 #    show-sql: true

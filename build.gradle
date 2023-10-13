@@ -34,7 +34,9 @@ dependencies {
 	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1' // json 방식
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
@@ -42,5 +44,9 @@ dependencies {
 }
 
 tasks.named('test') {
+	useJUnitPlatform()
+}
+
+test {
 	useJUnitPlatform()
 }

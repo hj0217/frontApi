@@ -116,7 +116,7 @@ public class TermController {
     @PostMapping(value = "/register")
     @ResponseBody
     public int register (@RequestBody Term term) {
-        System.out.println(term);
+        System.out.println("Controller body 값 확인용:" + term);
         return termService.register(term);
     }
 }

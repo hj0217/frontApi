@@ -17,6 +17,10 @@ spring:
       connection-test-query: select * from information_schema.tables limit 1
 
 
+logging:
+  config:
+    classpath: log4j2.yaml
+
 
 #  jpa:
 #    show-sql: true

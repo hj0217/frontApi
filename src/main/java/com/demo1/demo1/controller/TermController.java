@@ -56,13 +56,23 @@ public class TermController {
 
     /*-----------------------------------------검색 search------------------------------------------------*/
     @PostMapping("/search")
-    public String search(@RequestParam(value="searchType") String searchType,
+    public String search(@RequestParam(value="type", required = false) String searchType,
+                         @RequestParam(value="pageNum", required = false, defaultValue = "1") int pageNum,
                          Term term, Model model) {
 
+        System.out.println("search  들어온 term 내용 :" + term);
+
         List<Term> terms = termService.search(term, searchType);
+        int listCount = terms.size();
+        int boardLimit = 30;
+        int pageLimit = 5;	// 보여질 페이지 수(하단 페이지 번호)
+        PageInfo pageInfo = Pagination.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
+
 
         model.addAttribute("terms", terms);
         model.addAttribute ("searchType", searchType);
+        model.addAttribute("pi", pageInfo);
+
         return "home";
     }
 

@@ -5,7 +5,7 @@ Configuration:
   Properties:
     Property:
       name: log-path
-      value: "logs"
+      value: "C:\Users\HyungjuLee\Downloads\mylogs"
 
   Appends:
     Console:

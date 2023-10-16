@@ -23,13 +23,13 @@ public class SpringConfig extends HikariConfig {
 //    }
 
     @Bean
-    public JdbcTermRepository termRepository() throws SQLException {
+    public JdbcTermRepository termRepository() {
         return new JdbcTermRepository(dataSource());
         //return new JdbcTermRepository(em);
     }
 
     @Bean
-    public DataSource dataSource() throws SQLException {
+    public DataSource dataSource() {
         final HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setJdbcUrl("jdbc:oracle:thin:@localhost:1521/xe");
         hikariDataSource.setUsername("System");

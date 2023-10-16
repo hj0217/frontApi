@@ -4,12 +4,17 @@ import com.demo1.demo1.domain.PageInfo;
 import com.demo1.demo1.domain.Term;
 import com.demo1.demo1.domain.TermDtl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Slf4j
 @RequiredArgsConstructor
 public class JdbcTermRepository implements TermRepository {
 
@@ -18,14 +23,16 @@ public class JdbcTermRepository implements TermRepository {
     //    this.dataSource = dataSource;
     //}
 
-    // DataSource
-    private final DataSource dataSource;
-
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     //DB 접속 정보 for DriverManager
     private final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
     private final String DB_ID = "SYSTEM";
     private final String DB_PW = "1234";
+
+
+    // DataSource
+    private final DataSource dataSource;
 
 
     /* --------------------------------------------------게시글  수 카운트 (DriverManager)-------------------------------------------------------------------*/
@@ -43,6 +50,7 @@ public class JdbcTermRepository implements TermRepository {
 
     }
 /*-----------------------------------------------------게시글 전체 가져오기 ---------------------------------------------------------------*/
+
     @Override
     public List<Term> findAll() {
         String sql = "SELECT * FROM TERM_MST";
@@ -51,7 +59,7 @@ public class JdbcTermRepository implements TermRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql);
              ResultSet rs = pst.executeQuery();) {
-            System.out.println("repository find all pst: " + pst);
+
                 while (rs.next()) {
                     Term term = new Term();
                     term.setNo(rs.getInt("Term_no"));
@@ -103,7 +111,9 @@ public class JdbcTermRepository implements TermRepository {
                     }
                 return terms;
         } catch (SQLException e) {
+            LOGGER.error("Error while fetching data from DB", e);
             throw new DataAccessException("Error while fetching data from DB" , e){};
+
         }
     }
 
@@ -132,6 +142,7 @@ public class JdbcTermRepository implements TermRepository {
                 return term;
 
         } catch (SQLException e) {
+            LOGGER.error("Error while fetching data from DB", e);
             throw new DataAccessException("Error while fetching data from DB" , e){};
         }
     }
@@ -155,7 +166,7 @@ public class JdbcTermRepository implements TermRepository {
                 }
                 return termDtl;
         } catch (SQLException e) {
-            throw new DataAccessException("Error while fetching data from DB" , e) {};
+            throw new DataAccessException("Error while fetching data from DB" , e){};
         }
     }
 
@@ -196,13 +207,12 @@ public class JdbcTermRepository implements TermRepository {
 
             try {
 
-                //System.out.println("repositroy term 등록 까지 들어오나?? 확인용");
                 conn = dataSource.getConnection();
                 conn.setAutoCommit(false);
 
                 try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"});) {
 
-                    //System.out.println("repositroy pst  확인용: " + pst);
+
                     pst.setString(1, term.getType());
                     pst.setString(2, term.getYn());
                     pst.setString(3, term.getStartDate());
@@ -227,7 +237,7 @@ public class JdbcTermRepository implements TermRepository {
                         try {
                             conn.rollback();
                         } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
+                            throw new DataAccessException("Error while fetching data from DB" , e) {};
                         }
                     }
                 }
@@ -238,7 +248,7 @@ public class JdbcTermRepository implements TermRepository {
                         conn.setAutoCommit(true);
                         conn.close();
                     } catch (SQLException e) {
-
+                        throw new DataAccessException("Error while fetching data from DB" , e) {};
                     }
                 }
             return termNo ;
@@ -272,7 +282,7 @@ public class JdbcTermRepository implements TermRepository {
                             conn.rollback();
                         }
                     } catch (SQLException ex) {
-                        throw new RuntimeException(ex){};
+                        throw new DataAccessException("Error while fetching data from DB" , e) {};
                     }
                 }
             } catch (SQLException e) {
@@ -281,10 +291,10 @@ public class JdbcTermRepository implements TermRepository {
                 try {
                    conn.setAutoCommit(true);
                    conn.close();
-                } catch (SQLException ex) {
+                } catch (SQLException e) {
+                    throw new DataAccessException("Error while fetching data from DB" , e) {};
                 }
             }
-            //System.out.println("repositroy 확인용 4 result: " + result);
             return  result;
         }
 
@@ -511,8 +521,8 @@ public class JdbcTermRepository implements TermRepository {
                 }
 
                 return terms;
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
+            } catch (SQLException e) {
+                throw new DataAccessException("Error while fetching data from DB" , e) {};
             }
 
         } else { // 전체 검색
@@ -553,11 +563,10 @@ public class JdbcTermRepository implements TermRepository {
                     }
                 }
                 return terms;
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
+            } catch (SQLException e) {
+                throw new DataAccessException("Error while fetching data from DB" , e) {};
             }
         }
-
     }
 
 } //

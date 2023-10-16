@@ -18,7 +18,7 @@
 </head>
 <body>
 <div class="container">
-    <form method="post" th:action="@{'/terms/search'}">
+    <form method="post" th:action="@{'/terms/search'}" id="searchForm">
         <div class="first-line">
             <div>
                 <span id="type-option">약관유형</span>
@@ -54,7 +54,7 @@
 
             <div class="float-center">
                 <div>
-                    <button type="button">검색</button>
+                    <button type="button" onclick="$('#searchForm').submit()" >검색</button>
                     <button type="reset">초기화</button>
                 </div>
             </div>
@@ -63,11 +63,11 @@
 
 
         총<span th:text="${pi.getListCount()}"></span>건
-            <select id="boardLimit" name="boardLimit">
-                <option th:value="30" th:selected="${pi == null || pi.getBoardLimit()== 30}">30개씩 보기</option>
-                <option th:value="50" th:selected="${pi.getBoardLimit() == 50}">50개씩 보기</option>
-                <option th:value="70" th:selected="${pi.getBoardLimit() == 70}">70개씩 보기</option>
-            </select>
+        <select id="boardLimit" name="boardLimit">
+            <option th:value="30" th:selected="${pi == null || pi.getBoardLimit()== 30}">30개씩 보기</option>
+            <option th:value="50" th:selected="${pi.getBoardLimit() == 50}">50개씩 보기</option>
+            <option th:value="70" th:selected="${pi.getBoardLimit() == 70}">70개씩 보기</option>
+        </select>
 
         <a th:href="@{'/terms/detail/'}"><button>등록</button></a>
         <table class="table table-hover">

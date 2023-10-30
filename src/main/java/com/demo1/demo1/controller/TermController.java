@@ -1,20 +1,16 @@
 package com.demo1.demo1.controller;
 
-import com.demo1.demo1.domain.PageInfo;
-import com.demo1.demo1.domain.Term;
-import com.demo1.demo1.domain.TermDtl;
+import com.demo1.demo1.vo.PageInfo;
+import com.demo1.demo1.vo.Term;
 import com.demo1.demo1.service.TermService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Controller
-@RequestMapping("/terms")
+@Controller @RequestMapping("/terms")
 @RequiredArgsConstructor
 public class TermController {
 
@@ -37,8 +33,6 @@ public class TermController {
                        @RequestParam(value = "pageNum", required=false, defaultValue = "1") int pageNum,
                        Model model) {
 
-        // 검색 조건 확인 (검색결과 몇개 출력 / 현재 페이지 번호 / 검색 조건 (Term)
-
         ////전체 게시글 구하기
         int listCount = termService.listCount();
         int pageLimit = 5;	// 보여질 페이지 수(하단 페이지 번호)
@@ -51,7 +45,6 @@ public class TermController {
 
         return "home";
     }
-
 
 
     /*-----------------------------------------검색 search------------------------------------------------*/
@@ -78,8 +71,9 @@ public class TermController {
 
 
     /*------------------------------등록 페이지 & 상세 페이지--------------------------------------*/
-    @GetMapping(value = {"/detail/" , "/detail/{strNo}"})
+    @GetMapping(value = {"/detail/" , "/detail/{strNo}", "/detail/{strNo}/modify"})
     public String detail(@PathVariable("strNo") Optional<String> strNo,
+                         @RequestParam(value = "modify", defaultValue = "detail") String modify,
                          Model model) {
 
         if(strNo.isPresent()) { // 상세페이지
@@ -91,15 +85,19 @@ public class TermController {
 //            list.add(termService.findConts(no, "cn"));
 //            list.add(termService.findConts(no, "jp"));
     /*-----------------수정 후 코드-----------------------*/
-
-            model.addAttribute("term", termService.findOne(no));
+            Term term = termService.findOne(no);
+            model.addAttribute("term", term);
             model.addAttribute("list" ,termService.findConts(no));
-
+            model.addAttribute("modify" , null);
+            if (!"detail".equals(modify)) {
+                model.addAttribute("modify", "modify");
+            }
             return "terms/detail";
 
         } else { //등록 페이지
             model.addAttribute("term", null);
             model.addAttribute("list" , null);
+            model.addAttribute("modify" , null);
             return "/terms/detail";
         }
     }
@@ -126,7 +124,15 @@ public class TermController {
     @PostMapping(value = "/register")
     @ResponseBody
     public int register (@RequestBody Term term) {
-        System.out.println("Controller body 값 확인용:" + term);
+System.out.println("등록확인용: "+term);
         return termService.register(term);
     }
+
+    /*-------------------------------------- 수정 ----------------------------------------------*/
+    @PostMapping(value = "/update")
+    @ResponseBody
+    public int update (@RequestBody Term term) {
+        return termService.update(term);
+    }
+
 }

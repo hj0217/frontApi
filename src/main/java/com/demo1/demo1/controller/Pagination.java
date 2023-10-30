@@ -1,6 +1,6 @@
 package com.demo1.demo1.controller;
 
-import com.demo1.demo1.domain.PageInfo;
+import com.demo1.demo1.vo.PageInfo;
 
 public class Pagination {
 
@@ -12,6 +12,7 @@ public class Pagination {
         if (endPage > maxPage) {
             endPage = maxPage;
         }
-        return new PageInfo(listCount, currentPage, pageLimit, boardLimit, maxPage, startPage, endPage);
+        int offset = (currentPage -1) * boardLimit;
+        return new PageInfo(listCount, currentPage, pageLimit, boardLimit, maxPage, startPage, endPage,offset);
     }
 }

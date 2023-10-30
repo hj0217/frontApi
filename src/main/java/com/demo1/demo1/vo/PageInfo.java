@@ -1,4 +1,4 @@
-package com.demo1.demo1.domain;
+package com.demo1.demo1.vo;
 
 import lombok.*;
 
@@ -15,5 +15,8 @@ public class PageInfo {
     private int maxPage;			// 전체 페이지
     private int startPage;			// 시작 페이지
     private int endPage;			// 끝 페이지
+
+    //------   2023-10-17 추가  ------//
+    private int offset;
 
 }

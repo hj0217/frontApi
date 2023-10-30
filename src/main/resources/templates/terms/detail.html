@@ -1,182 +1,177 @@
 <!DOCTYPE html>
 <html lang ="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>약관 등록</title>
-
-    <!--common.css / JQuery /daterangepicker / bootstrap-->
-    <link href="/css/common.css" rel="stylesheet">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <th:block th:insert="common/fragments :: head"></th:block>
 
 </head>
 
 <body>
+<th:block th:insert="common/fragments :: header"></th:block>
+<input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0}" th:disabled="${term != null && modify == null}"/>
 
 <div class="container">
-
-
-
-
-    <h2 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h2>
-
-        <!--<form name="form" id="form" method="post" onsubmit="return check()">-->
-        <!--<form name="form" id="form" method="post">-->
-        <input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0 }"/>
-
-
-
-            <div class="first-line">
-            <div>
-                <span class="option">약관유형</span>
-                <label for="type"></label>
-                <select id="type" name="type" th:disabled="${term != null}">
-                    <option value="" th:selected="${term == null}" th:disabled="${term ==null}">----- 전체 -----</option>
-                    <option value="이용약관" th:selected="${term != null && term.getType()== '이용약관'}" th:disabled="${term != null && term.getType()== '이용약관'}">이용약관</option>
-                    <option value="개인정보취급방침" th:selected="${term != null && term.type== '개인정보취급방침'}">개인정보취급방침</option>
-                    <option value="회원가입 동의" th:selected="${term != null && term.type == '회원가입 동의'}">회원가입 동의</option>
-                    <option value="주문동의" th:selected="${term != null && term.type == '주문동의'}">주문동의</option>
-                </select>
-            </div>
-
-            <div>
-                <span class="option">필수여부</span>
-                <label for="yn"></label><input type="checkbox" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && term.getYn() == 'Y' || term != null && term.getYn() == 'N'}"/>
-                <input type="hidden" id="_yn" name="yn" value="N"/>
-            </div>
-
-            <div>
-                <span class="option">전시 시작일</span>
-                <div id="period">
-                    <label for="openToEnd"></label><input class="box"  style="width:350px" type="text" id="openToEnd" autocomplete="off" th:value="${term != null ? term.getStartDate() + '~' + term.getEndDate() : ''}" />
-                    <input type="hidden" id="startDateInput" name="startDate" th:value="${term != null ?  term.getStartDate() : ''}" />
-                    <input type="hidden" id="endDateInput" name="endDate" th:value="${term != null ?  term.getEndDate() : ''}" />
-                </div>
-            </div>
-
-        </div>
-
-
-       <!-- <span id="whether-not-use">사용여부</span>
+    <h4 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h4>
         <div>
-            <label><input type="radio" name=whether_not_use"></label>사용함
-            <label><input type="radio" name=whether_not_use"></label>사용안함
-         </div>-->
-
-        <div>
-            <span class="option">지원언어</span>
-
-            <div th:each="item : ${list}">
-                    <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
-            </div>
-
-<!--            <th:block th:if="${term != null}">-->
-                <label><input type="checkbox" id="checkboxko" class="checkbox" name="checkbox" value="ko"  th:disabled="${term != null}"/>국문</label>
-                <label><input type="checkbox" id="checkboxen" class="checkbox" name="checkbox" value="en"  th:disabled="${term != null}"/>영문</label>
-                <label><input type="checkbox" id="checkboxcn" class="checkbox" name="checkbox" value="cn"  th:disabled="${term != null}"/>중문</label>
-                <label><input type="checkbox" id="checkboxjp" class="checkbox" name="checkbox" value="jp"  th:disabled="${term != null}"/>일문</label>
-<!--            </th:block>-->
-
-<!--            <th:block th:unless="${term != null}">-->
-<!--                <label><input type="checkbox"  id="checkboxkoForNull"  value="ko" />국문</label>-->
-<!--                <label><input type="checkbox"  id="checkboxenForNull"  value="en" />영문</label>-->
-<!--                <label><input type="checkbox"  id="checkboxcnForNull"  value="cn" />중문</label>-->
-<!--                <label><input type="checkbox"  id="checkboxjpForNull"  value="jp" />일문</label>-->
-<!--            </th:block>-->
-
-        </div>
-
-
-
-
-        <div class="tableContainer">
             <table class="table">
+                <tbody>
                 <tr>
-                    <td class="option">약관정보</td>
-                   <td>
-                            <ul class="nav nav-pills" id="liParent">
-                                <li class="nav-item active"  data-lang="ko"><button type="button" id="lang-ko" th:onclick="cntControll('ko')">국문</button></li>
-                                <li class="nav-item active"  data-lang="en"><button type="button" id="lang-en" th:onclick="cntControll('en')">영문</button></li>
-                                <li class="nav-item active"  data-lang="cn"><button type="button" id="lang-cn" th:onclick="cntControll('cn')">중문</button></li>
-                                <li class="nav-item active"  data-lang="jp"><button type="button" id="lang-jp" th:onclick="cntControll('jp')">일문</button></li>
-                            </ul>
-                   </td>
-                </tr>
-                    <tr>
-                        <td class="option">약관 내용</td>
-                        <td colspan="4">
-                            <div id="parentTextarea">
-                                <th:block th:each="item : ${list}">
-                                        <textarea name="" th:id="'cnt-'+${item.getLang()}" class="hidden" rows="10" cols="100"  style="display:none" th:readonly="${term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
-                                </th:block>
-                            </div>
-
-<!--                            <th:block th:unless="${term != null}">-->
-<!--                                    <textarea   id="cnt-ko" rows="10" cols="100" style="display:none" >  </textarea>-->
-<!--                                    <textarea   id="cnt-en" rows="10" cols="100" style="display:none" >  </textarea>-->
-<!--                                    <textarea   id="cnt-cn" rows="10" cols="100" style="display:none" >  </textarea>-->
-<!--                                    <textarea   id="cnt-jp" rows="10" cols="100" style="display:none" >  </textarea>-->
-<!--                            </th:block>-->
+                    <th class="table-secondary"><span class="option">약관유형</span></th>
+                        <td>
+                            <label for="type"></label>
+                            <select id="type" name="type" th:disabled="${term != null && modify == null}">
+                                <option value="" th:selected="${term == null}" th:disabled="${term ==null && modify == null}">----- 전체 -----</option>
+                                <option value="이용약관" th:selected="${term != null && term.getType()== '이용약관'}" th:disabled="${term != null && term.getType()== '이용약관'}">이용약관</option>
+                                <option value="개인정보취급방침" th:selected="${term != null && term.type== '개인정보취급방침'}">개인정보취급방침</option>
+                                <option value="회원가입 동의" th:selected="${term != null && term.type == '회원가입 동의'}">회원가입 동의</option>
+                                <option value="주문동의" th:selected="${term != null && term.type == '주문동의'}">주문동의</option>
+                            </select>
                         </td>
-                    </tr>
+                        <th class="table-secondary"><span class="option">필수여부</span></th>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && modify == null && term.getYn() == 'Y' || term != null && modify == null && term.getYn() == 'N'}"/>
+                                <input type="hidden" id="_yn" name="yn" value="N"/>
+                                <label class="form-check-label" for="yn">선택</label>
+                            </div>
+                        </td>
+                </tr>
+                <tr>
+                    <th class="table-secondary"><span class="option">전시 시작일</span></th>
+                        <td>
+                            <div id="period">
+                                <label for="openToEnd"></label><input class="box"  style="width:350px" type="text" id="openToEnd" autocomplete="off" th:value="${term != null ? term.getStartDate() + '~' + term.getEndDate() : ''}" />
+                                <input type="hidden" id="startDateInput" name="startDate" th:value="${term != null ?  term.getStartDate() : ''}" />
+                                <input type="hidden" id="endDateInput" name="endDate" th:value="${term != null ?  term.getEndDate() : ''}" />
+                            </div>
+                        </td>
+                    <th class="table-secondary"><span class="option">사용여부</span></th>
+                    <td>
+                        <div>
+<!--                            <label><input type="radio" name=whether_not_use"></label>사용함-->
+<!--                            <label><input type="radio" name=whether_not_use"></label>사용안함-->
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="table-secondary"><span class="option">지원언어</span></th>
+                    <td colspan="3">
+                        <div style="width: 250px;">
+                            <div class="d-grid gap-2 d-md-flex justify-content-evenly">
+                                <label><input type="checkbox" id="checkboxko" class="checkbox" name="checkbox" value="ko"  th:disabled="${term != null && modify == null}"/>국문</label>
+                                <label><input type="checkbox" id="checkboxen" class="checkbox" name="checkbox" value="en"  th:disabled="${term != null && modify == null}"/>영문</label>
+                                <label><input type="checkbox" id="checkboxcn" class="checkbox" name="checkbox" value="cn"  th:disabled="${term != null && modify == null}"/>중문</label>
+                                <label><input type="checkbox" id="checkboxjp" class="checkbox" name="checkbox" value="jp"  th:disabled="${term != null && modify == null}"/>일문</label>
+                            </div>
+                        </div>
+                        <div th:each="item : ${list}">
+                        <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="space">
+                    <th></th>
+                    <td></td>
+                    <th></th>
+                    <td></td>
+                </tr>
+
+                </tbody>
+
+                <tbody>
+                <tr>
+                    <th class="table-secondary"><span>약관정보</span></th>
+                    <td colspan="3">
+                        <ul class="nav nav-tabs" id="liParent">
+                            <li class="nav-item"  data-lang="ko"><a class="nav-link active" aria-current="page" href="#" id="lang-ko" th:onclick="cntControll('ko')">국문</a></li>
+                            <li class="nav-item"  data-lang="en"><a class="nav-link active" aria-current="page" href="#" id="lang-en" th:onclick="cntControll('en')">영문</a></li>
+                            <li class="nav-item"  data-lang="cn"><a class="nav-link active" aria-current="page" href="#" id="lang-cn" th:onclick="cntControll('cn')">중문</a></li>
+                            <li class="nav-item"  data-lang="jp"><a class="nav-link active" aria-current="page" href="#" id="lang-jp" th:onclick="cntControll('jp')">일문</a></li>
+                        </ul>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th class="table-secondary">약관 내용</th>
+                    <td colspan="3">
+                        <div id="parentTextarea">
+                            <th:block th:each="item : ${list}">
+                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" class="hidden" rows="10" cols="100"  style="display:none" th:readonly="${modify == null && term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
+                            </th:block>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td></td>
+                    <th></th>
+                    <td></td>
+                </tr>
+                </tbody>
+<!--            </table>-->
+<!--        </div>-->
+
+
+<!--        <div class="third-line">-->
+<!--            <table class="table">-->
+                <tbody>
+                <tr>
+                    <th class="table-secondary"><span>등록자</span></th>
+                    <td>
+                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getRgstBy()} :''"  th:readonly="${term != null}"/></label>
+                    </td>
+                    <th class="table-secondary"><span class="option">등록일시</span></th>
+                    <td>
+                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getStartDate()} : ''"  th:readonly="${term != null}"/></label>
+                    </td>
+                </tr>
+
+                <th:block th:if="${term != null}">
+                 <tr>
+                     <th class="table-secondary"><span class="option">수정자</span></th>
+                     <td>
+                         <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/></label>
+                     </td>
+
+                    <th class="table-secondary"><span class="option">수정일시</span></th>
+                    <td>
+                        <label><input type="text" style="border: none; outline: none;"  th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/></label>
+                    </td>
+                 </tr>
+                </th:block >
+                </tbody>
             </table>
         </div>
 
-
-        <div class="third-line">
-            <div>
-                <span class="option">등록자</span><label>
-                <input type="text" th:value="${term != null} ? ${term.getRgstBy()} :''"   th:readonly="${term != null}"/>
-            </label>
-                <span class="option">등록일시</span><label>
-                <input type="text"  th:value="${term != null} ? ${term.getStartDate()} : ''"   th:readonly="${term != null}"/>
-            </label>
-            </div>
-
-<th:block th:if="${term != null}">
-            <div>
-                <span class="option">수정자</span>
-                <label>
-                    <input type="text"  th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/>
-                </label>
-                <span class="option">수정일시</span><label>
-                <input type="text"   th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/>
-            </label>
-            </div>
-</th:block >
-        </div>
-
-        <div class="float-center">
-            <th:block th:if="${term != null}">
-            <div>
-                <button type="button" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
-                <button type="button">수정</button>
+        <div>
+            <th:block th:if="${term != null && modify == null}">
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
+                <button type="button" class="btn btn-secondary" style="width: 89.8px;" th:onclick="|location.href='@{'/terms/detail/' + ${term.no} + '?modify=modify'}'|">수정</button>
             </div>
             </th:block>
 
-            <th:block th:unless="${term != null}">
-                <div>
-                    <button type="reset">초기화</button>
-                    <button type="button" id="submitbtn" value="save">저장</button>
+            <th:block th:if="${term != null && modify != null}">
+                <div class="d-grid gap-2 d-md-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">취소</button>
+                    <button type="button" class="btn btn-secondary" id="updatebtn" value="update">수정완료</button>
+                </div>
+            </th:block>
+
+            <th:block th:if="${term == null}">
+                <div class="d-grid gap-2 d-md-flex justify-content-center">
+                    <button type="reset" class="btn btn-secondary me-md-2">초기화</button>
+                    <button type="button" class="btn btn-secondary" id="submitbtn" value="save" >저장</button>
                 </div>
             </th:block>
         </div>
 
-<!--    </form>-->
-
 </div> <!-- end of container-->
+<!--footer -->
+<th:block th:insert="common/fragments :: footer"></th:block>
 
-<!-- ajax  -->
-<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+
 <script>
-
-
-
 /* ---------------------------------------------------------상세페이지 ----------------------------------------------------------------*/
 //(ajax 사용x) 디테일 페이지 ajax 통신 대신에 데이터 한번에 가져와서 보여줌
     <!--언어 구분-->
@@ -211,15 +206,11 @@
     //     });
     // }); // end of $(liParent)
 
-
-
-
 /*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
 
         const languages = [ ];
         $(".checkbox").each(function () {
            languages.push($(this).val())
-            console.log(languages.length);
         });
 
         for (const lang of languages) {
@@ -230,28 +221,6 @@
             }
         }
 
-        // if ($('#hiddenko').length) { // DB로부터 전달받은 Langs 유무에 따라 분기 // 값이 있는 경우
-        //     $("#checkboxko").prop("checked", true);
-        // } else { //양식 맞춤 위해 textarea를 만들어줌//값이 없는 경우 // term = null
-        //     $('#parentTextarea').append('<textarea id ="cnt-ko" class="hidden" rows="10" cols="100"></textarea>');
-        // }
-        // if ($('#hiddenen').length) {
-        //     $("#checkboxen").prop("checked", true);
-        // } else {
-        //     $('#parentTextarea').append('<textarea id ="cnt-en" class="hidden" rows="10" cols="100"></textarea>');
-        // }
-        //
-        // if ($('#hiddencn').length) {
-        //     $("#checkboxcn").prop("checked",  true);
-        // } else {
-        //     $('#parentTextarea').append('<textarea id ="cnt-cn" class="hidden" rows="10" cols="100"></textarea>');
-        // }
-        //
-        // if ($('#hiddenjp').length) {
-        //     $("#checkboxjp").prop("checked",  true);
-        // } else {
-        //     $('#parentTextarea').append('<textarea id ="cnt-jp" class="hidden" rows="10" cols="100"></textarea>');
-        // }
 
 /* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
     //  null check
@@ -273,21 +242,6 @@
         var isTextareaCn = false;
         var isTextareaJp = false;
 
-        // if ($('#checkboxkoForNull').prop('checked')) {
-        //     isTextareaKo = isEmpty($('#cnt-ko').val());
-        // }
-        //
-        // if ($('#checkboxenForNull').prop('checked')) {
-        //     isTextareaEn = isEmpty($('#cnt-en').val());
-        // }
-        //
-        // if ($('#checkboxcnForNull').prop('checked')) {
-        //     isTextareaCn = isEmpty($('#cnt-cn').val());
-        // }
-        //
-        // if ($('#checkboxjpForNull').prop('checked')) {
-        //     isTextareaJp = isEmpty($('#cnt-jp').val());
-        // }
 
         if ($('#checkboxko').prop('checked')) {
             isTextareaKo = isEmpty($('#cnt-ko').val());
@@ -336,138 +290,97 @@
     $("#yn").change(function() {
         var c1 = $("#yn").is(":checked") ? "Y" : "N";
         $("#_yn").val(c1);
+        if (c1 === "Y") {
+            $("label[for='yn']").text("필수");
+        } else {
+            $("label[for='yn']").text("선택");
+        }
     });
 
+ /* ---------------------------------------------- 등록/수정 페이지 -------------------------------------------*/
+    // ajax로 form 제출하기
 
+        var formData = {
+            no: '',
+            type: '',
+            yn: '',
+            startDate: '',
+            endDate: '',
+            termDtlList: []
+        };
 
-
-    //$("#checkboxkoForNull,#checkboxenForNull, #checkboxcnForNull, #checkboxjpForNull ").change(function() {
-    // $("#checkboxko,#checkboxen, #checkboxcn, #checkboxjp").change(function() {
-    //     var selectedLang = $(this).val();
-    //     selectedLangArr.push(selectedLang);
-    //     $(this).attr('name', 'termDtlList['+selectedLangArr.length+'].lang');
-    //
-    //     if (selectedLang ==="ko") {
-    //         $("#cnt-ko").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
-    //     }
-    //     if (selectedLang === "en") {
-    //         $("#cnt-en").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
-    //     }
-    //     if (selectedLang === "cn") {
-    //         $("#cnt-cn").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
-    //     }
-    //     if (selectedLang === "jp") {
-    //         $("#cnt-jp").attr('name', 'termDtlList['+selectedLangArr.length+'].cnt');
-    //     }
-    // });
-
-
-
-// ajax로 form 제출하기
-        $('#submitbtn').on ('click' , function() {
-
-            // var formsubmit = $('form').serialize(); // form값들을 queryString형태로 만들어줌
-            // console.log(formsubmit);
-            // console.log(JSON.stringify(formsubmit));
-
-            if(check()) {
-
-                var formData = {
-                    type: $('#type').val(),
-                    yn: $('#_yn').val(),
-                    startDate: $('#startDateInput').val(),
-                    endDate: $('#endDateInput').val(),
-                    termDtlList: []
-                };
-
-            var selectedLangArr = [];
-                //선택 언어 count
-               $("input:checkbox[name=checkbox]:checked").each(function () {
-                   selectedLangArr.push($(this).val());
-                });
-
-                for(const i in selectedLangArr) {
-
-                    //선택 언어 name 설정
-                    $("#checkbox"+selectedLangArr[i]).attr('name', 'termDtlList['+ i +'].lang');
-                    $("#cnt-"+selectedLangArr[i]).attr('name', 'termDtlList['+ i +'].cnt');
-
-                    //선택언어  DataForm에 넣기
-                    formData.termDtlList.push({
-                            lang: selectedLangArr[i],
-                            cnt: $('#cnt-'+ selectedLangArr[i]).val()
-                    });
+            // submitbtn 버튼 클릭 이벤트
+            $('#submitbtn').on ('click' , function() {
+                if(check()) {
+                    setFormData();
+                    ajaxRequest("/terms/register");
                 }
+             });
 
-                // // 한국어가 체크된 경우
-                // //if ($('#checkboxkoForNull').prop('checked')) {
-                // if ($('#checkboxko').prop('checked')) {
-                //     formData.termDtlList.push({
-                //         lang: 'ko',
-                //         cnt: $('#cnt-ko').val()
-                //     });
-                // }
-                // // 영어가 체크된 경우
-                // //if ($('#checkboxenForNull').prop('checked')) {
-                // if ($('#checkboxen').prop('checked')) {
-                //     formData.termDtlList.push({
-                //         lang: 'en',
-                //         cnt: $('#cnt-en').val()
-                //     });
-                // }
-                // // 중국어가 체크된 경우
-                // //if ($('#checkboxcnForNull').prop('checked')) {
-                // if ($('#checkboxcn').prop('checked')) {
-                //     formData.termDtlList.push({
-                //         lang: 'cn',
-                //         cnt: $('#cnt-cn').val()
-                //     });
-                // }
-                // // 일본어가 체크된 경우
-                // //if ($('#checkboxjpForNull').prop('checked')) {
-                // if ($('#checkboxjp').prop('checked')) {
-                //     formData.termDtlList.push({
-                //         lang: 'jp',
-                //         cnt: $('#cnt-jp').val()
-                //     });
-                // }
+            // updatebtn 버튼 클릭 이벤트
+            $('#updatebtn').on('click', function () {
+                if (check()) {
+                    setFormData();
+                    ajaxRequest("/terms/update");
+                }
+            });
 
-                $.ajax({
-                    type: "post",
-                    //data: JSON.stringify(formsubmitArray[0]),
-                    // data: {
-                    //   "type" :"test용"
-                    // },
-                    data: JSON.stringify(formData),
-                    contentType:"application/json; charset=UTF-8",
-                    url: "/terms/register",
-                    dataType:'json',
-                    timeout: 10000,
-                    success: function (result) {
-                        console.log('result값:' + result);
-                        if(result > 0 ) {
-                            alert("업로드 성공!!");
-                            location.href = '/terms/';
-                        } else {
-                            alert("업로드 실패!!");
-                            location.href = '/terms/';
-                        }
-                    },
-                    error: function() {
-                        alert(" 작업 오류!!! 다시 실행해 주세요!");
+/* ---------------------------------------------- AJAX 중복코드 -------------------------------------------*/
+        function ajaxRequest(url) {
+        $.ajax({
+                type: "post",
+                data: JSON.stringify(formData),
+                contentType:"application/json; charset=UTF-8",
+                url: url,
+                dataType:'json',
+                timeout: 10000,
+                success: function (result) {
+                    if(result > 0 ) {
+                        alert("업로드 성공!!");
+                        location.href = '/terms/';
+                    } else {
+                        alert("업로드 실패!!");
                         location.href = '/terms/';
                     }
+                },
+                error: function() {
+                    alert(" 작업 오류!!! 다시 실행해 주세요!");
+                    location.href = '/terms/';
+                }
+            });
+        }
+
+         // 공통 함수로 데이터 설정
+        function setFormData() {
+            formData.no = $('#hiddenNo').val();
+            formData.type = $('#type').val();
+            formData.yn = $('#_yn').val();
+            formData.startDate = $('#startDateInput').val();
+            formData.endDate = $('#endDateInput').val();
+
+            formData.termDtlList = [];
+
+            var selectedLangArr = [];
+
+            $("input:checkbox[name=checkbox]:checked").each(function () {
+                selectedLangArr.push($(this).val());
+            });
+
+            for (const i in selectedLangArr) {
+                $("#checkbox" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].lang');
+                $("#cnt-" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].cnt');
+
+                formData.termDtlList.push({
+                    lang: selectedLangArr[i],
+                    cnt: $('#cnt-' + selectedLangArr[i]).val()
                 });
             }
-            /*else {
-            }*/
-         });
+        }
+
 /*-----------------------------------------공통--------------------------------------------------------*/
     // 초기페이지 국문 노출!
         $("#parentTextarea").find(".hidden").hide();
         $("#cnt-ko").show();
-        // $("#cnt-ko").css('display','block');
-        // $("#cnt-en,#cnt-cn,#cnt-jp").css('display','none');
 
     // textarea 컨트롤
     function cntControll (lang) {
@@ -475,28 +388,6 @@
         $("#cnt-" + lang).show();
     }
 
-    // function cntControll (lang) {
-    //     if (lang === 'ko') {
-    //         // $("#cnt-ko").css('display','block');
-    //         // $("#cnt-en, #cnt-cn, #cnt-jp").css('display','none');
-    //         // $("#cnt-" + lang).show();
-    //         // $("#cnt-en, #cnt-cn, #cnt-jp").hide();
-
-    //
-    //     } else if (lang === 'en') {
-    //         $("#cnt-en").show();
-    //         $("#cnt-ko, #cnt-cn, #cnt-jp").hide();
-    //
-    //     } else if (lang === 'cn') {
-    //         $("#cnt-cn").show();
-    //         $("#cnt-ko,#cnt-en,#cnt-jp" ).hide();
-    //
-    //
-    //     } else {
-    //         $("#cnt-jp").show();
-    //         $("#cnt-ko, #cnt-en, #cnt-cn").hide();
-    //     }
-    // }
 
 /* -----------------------------------------달력 --------------------------------------*/
     var startDate= new Date();
@@ -553,6 +444,40 @@
         });
     }
 
+       if ($("#startDateInput").val() && !$('#hiddenNo').prop('disabled')) {
+            startDate.setMonth(endDate.getMonth() - 1);
+
+            $(function () {
+                $('#openToEnd').daterangepicker({
+                    "locale": {
+                        "format": "YYYY-MM-DD",
+                        "separator": " ~ ",
+                        "applyLabel": "확인",
+                        "cancelLabel": "취소",
+                        "fromLabel": "From",
+                        "toLabel": "To",
+                        "customRangeLabel": "Custom",
+                        "weekLabel": "W",
+                        "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+                        "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+                        "firstDay": 1
+                    },
+                    "startDate": startDate.getFullYear() + '-' + ('0' + (startDate.getMonth() + 1)).slice(-2) + '-' + ('0' + startDate.getDate()).slice(-2),
+                    "endDate": endDate.getFullYear() + '-' + ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + ('0' + endDate.getDate()).slice(-2),
+                    "drops": "down"
+
+                }, function (start, end, label) {
+
+                    startDate = start.format('YYYY-MM-DD');
+                    endDate = end.format('YYYY-MM-DD');
+
+                    $('#startDateInput').val(startDate);
+                    $('#endDateInput').val(endDate);
+
+                });
+            });
+            $("#openToEnd").prop("disabled", false);
+      }
 
 </script>
 

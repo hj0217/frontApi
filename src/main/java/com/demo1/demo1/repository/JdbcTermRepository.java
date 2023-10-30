@@ -1,8 +1,8 @@
 package com.demo1.demo1.repository;
 
-import com.demo1.demo1.domain.PageInfo;
-import com.demo1.demo1.domain.Term;
-import com.demo1.demo1.domain.TermDtl;
+import com.demo1.demo1.vo.PageInfo;
+import com.demo1.demo1.vo.Term;
+import com.demo1.demo1.vo.TermDtl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

@@ -4,6 +4,9 @@ import com.demo1.demo1.repository.JdbcTermRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
+
+import org.mybatis.spring.annotation.MapperScan;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +15,7 @@ import java.sql.SQLException;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.datasource")
+@MapperScan(value= "com.demo1.demo1.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
 @RequiredArgsConstructor
 public class SpringConfig extends HikariConfig {
 
@@ -21,12 +25,12 @@ public class SpringConfig extends HikariConfig {
 //    public TermService termService() {
 //        return new TermService(termRepository());
 //    }
-
-    @Bean
-    public JdbcTermRepository termRepository() {
-        return new JdbcTermRepository(dataSource());
-        //return new JdbcTermRepository(em);
-    }
+//
+//    @Bean
+//    public JdbcTermRepository termRepository() {
+//        return new JdbcTermRepository(dataSource());
+//        //return new JdbcTermRepository(em);
+//    }
 
     @Bean
     public DataSource dataSource() {

@@ -43,6 +43,10 @@ values ( 50,
 insert into TERM_DTL (TERM_NO, TERM_LANG, TERM_CNT)
 values (1,
         'ko',
-        'This is the order-Agreement. (ver.En)');
+        'This is the order-Agreement. (ver.ko)');
 
-한글 주문동의서입니다
+
+insert into Member (ter
+
+
+

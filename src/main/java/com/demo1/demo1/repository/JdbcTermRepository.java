@@ -1,22 +1,18 @@
 package com.demo1.demo1.repository;
 
-import com.demo1.demo1.vo.PageInfo;
-import com.demo1.demo1.vo.Term;
-import com.demo1.demo1.vo.TermDtl;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
-import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 
-@Slf4j
 @RequiredArgsConstructor
-public class JdbcTermRepository implements TermRepository {
+//@Repository
+//public class JdbcTermRepository implements TermRepository {
+public class JdbcTermRepository {
 
     //@RequiredArgsconstructor 어노테이션으로 생성자 생략 가능
     //public JdbcTermRepository(DataSource dataSource) {
@@ -25,278 +21,291 @@ public class JdbcTermRepository implements TermRepository {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    //DB 접속 정보 for DriverManager
-    private final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
-    private final String DB_ID = "SYSTEM";
-    private final String DB_PW = "1234";
+//   @PersistenceContext
+//    private EntityManager em;
+
+//   public Member memberRegister (Member member) {
+////       Member.builder()
+////               .id(member.getId())
+////               .password(member.getPassword()).build();
+////
+//       em.persist(member);
+//       return member;
+//   }
 
 
-    // DataSource
-    private final DataSource dataSource;
-
-
-    /* --------------------------------------------------게시글  수 카운트 (DriverManager)-------------------------------------------------------------------*/
-    // try-with-resource : autoClosable
-    @Override
-    public int listCount () {
-        String sql = "SELECT COUNT(*) FROM TERM_MST";
-
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
-            return rs.next() ? rs.getInt(1) : 0;
-
-        }catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-
-    }
-/*-----------------------------------------------------게시글 전체 가져오기 ---------------------------------------------------------------*/
-
-    @Override
-    public List<Term> findAll() {
-        String sql = "SELECT * FROM TERM_MST";
-        List<Term> terms = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement pst = conn.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery();) {
-
-                while (rs.next()) {
-                    Term term = new Term();
-                    term.setNo(rs.getInt("Term_no"));
-                    term.setType(rs.getString("Term_type"));
-                    term.setYn(rs.getString("Term_yn"));
-                    term.setStartDate(rs.getString("Term_startDate"));
-                    term.setEndDate(rs.getString("Term_endDate"));
-                    term.setRgstBy(rs.getString("Term_rgst_by"));
-                    term.setRgstDate(rs.getString("Term_rgst_date"));
-                    term.setMdfBy(rs.getString("Term_mdf_by"));
-                    term.setMdfDate(rs.getString("Term_mdf_date"));
-                    terms.add(term);
-                }
-            return terms;
-        } catch (SQLException e) {
-            throw new DataAccessException("Error while fetching data from DB" , e) {
-            };
-        }
-    }
-
-    @Override
-    public List<Term> findAll(PageInfo pi) {
-
-        int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
-        //String sql = "SELECT * FROM TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
-        String sql = "SELECT TERM_NO, TERM_TYPE, TERM_YN, TERM_STARTDATE, TERM_ENDDATE, TERM_RGST_BY, TERM_RGST_DATE, TERM_MDF_BY, TERM_MDF_DATE " +
-                    "FROM TERM_MST " +
-                    "ORDER BY TERM_RGST_DATE DESC " +
-                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
-
-        List<Term> terms = new ArrayList<>();
-
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
-                pst.setInt(1, offset);
-                pst.setInt(2, pi.getBoardLimit());
-                ResultSet rs = pst.executeQuery();
-                    while (rs.next()) {
-                        Term term = new Term();
-                        term.setNo(rs.getInt("Term_no"));
-                        term.setType(rs.getString("Term_type"));
-                        term.setYn(rs.getString("Term_yn"));
-                        term.setStartDate(rs.getString("Term_startDate"));
-                        term.setEndDate(rs.getString("Term_endDate"));
-                        term.setRgstBy(rs.getString("Term_rgst_by"));
-                        term.setRgstDate(rs.getString("Term_rgst_date"));
-                        term.setMdfBy(rs.getString("Term_mdf_by"));
-                        term.setMdfDate(rs.getString("Term_mdf_date"));
-                        terms.add(term);
-                    }
-                return terms;
-        } catch (SQLException e) {
-            LOGGER.error("Error while fetching data from DB", e);
-            throw new DataAccessException("Error while fetching data from DB" , e){};
-
-        }
-    }
-
-/*------------------------------------------상세 페이지-----------------------------------------*/
-    @Override
-    public Term findOne(int no) {
-        String sql = "SELECT * FROM TERM_MST WHERE TERM_NO = ?";
-        Term term = new Term();
-
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
-                pst.setInt(1, no);
-                ResultSet rs = pst.executeQuery();
-
-                if (rs.next()) {
-                    term.setNo(rs.getInt("Term_no"));
-                    term.setType(rs.getString("Term_type"));
-                    term.setYn(rs.getString("Term_yn"));
-                    term.setStartDate(rs.getString("Term_startDate"));
-                    term.setEndDate(rs.getString("Term_endDate"));
-                    term.setRgstBy(rs.getString("Term_rgst_by"));
-                    term.setRgstDate(rs.getString("Term_rgst_date"));
-                    term.setMdfBy(rs.getString("Term_mdf_by"));
-                    term.setMdfDate(rs.getString("Term_mdf_date"));
-                }
-
-                return term;
-
-        } catch (SQLException e) {
-            LOGGER.error("Error while fetching data from DB", e);
-            throw new DataAccessException("Error while fetching data from DB" , e){};
-        }
-    }
-
-    //디테일 페이지 언어 별 클릭 시 컨텐츠 가져오기 (ajax)
-    @Override
-    public TermDtl findConts(int no, String lang) {
-
-        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =? AND term_lang = ?";
-        TermDtl termDtl = new TermDtl();
-
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
-                pst.setInt(1, no);
-                pst.setString(2, lang);
-                ResultSet rs = pst.executeQuery();
-
-                while (rs.next()) {
-                    termDtl.setNo(rs.getInt("term_no"));
-                    termDtl.setLang(rs.getString("term_lang"));
-                    termDtl.setCnt(rs.getString("term_cnt"));
-                }
-                return termDtl;
-        } catch (SQLException e) {
-            throw new DataAccessException("Error while fetching data from DB" , e){};
-        }
-    }
+//    //DB 접속 정보 for DriverManager
+//    private final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
+//    private final String DB_ID = "SYSTEM";
+//    private final String DB_PW = "1234";
+//
+//
+//    // DataSource
+//    private final DataSource dataSource;
+//
+//
+//    /* --------------------------------------------------게시글  수 카운트 (DriverManager)-------------------------------------------------------------------*/
+//    // try-with-resource : autoClosable
+//    @Override
+//    public int listCount () {
+//        String sql = "SELECT COUNT(*) FROM TERM_MST";
+//
+//        try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql); ResultSet rs = pst.executeQuery();) {
+//            return rs.next() ? rs.getInt(1) : 0;
+//
+//        }catch (Exception e) {
+//            throw new IllegalStateException(e);
+//        }
+//
+//    }
+///*-----------------------------------------------------게시글 전체 가져오기 ---------------------------------------------------------------*/
+//
+//    @Override
+//    public List<Term> findAll() {
+//        String sql = "SELECT * FROM TERM_MST";
+//        List<Term> terms = new ArrayList<>();
+//
+//        try (Connection conn = dataSource.getConnection();
+//             PreparedStatement pst = conn.prepareStatement(sql);
+//             ResultSet rs = pst.executeQuery();) {
+//
+//                while (rs.next()) {
+//                    Term term = new Term();
+//                    term.setNo(rs.getInt("Term_no"));
+//                    term.setType(rs.getString("Term_type"));
+//                    term.setYn(rs.getString("Term_yn"));
+//                    term.setStartDate(rs.getString("Term_startDate"));
+//                    term.setEndDate(rs.getString("Term_endDate"));
+//                    term.setRgstBy(rs.getString("Term_rgst_by"));
+//                    term.setRgstDate(rs.getString("Term_rgst_date"));
+//                    term.setMdfBy(rs.getString("Term_mdf_by"));
+//                    term.setMdfDate(rs.getString("Term_mdf_date"));
+//                    terms.add(term);
+//                }
+//            return terms;
+//        } catch (SQLException e) {
+//            throw new DataAccessException("Error while fetching data from DB" , e) {
+//            };
+//        }
+//    }
+//
+//    @Override
+//    public List<Term> findAll(PageInfo pi) {
+//
+//        int offset = (pi.getCurrentPage()-1) * pi.getBoardLimit();
+//        //String sql = "SELECT * FROM TERM_MST ORDER BY term_rgst_Date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+//        String sql = "SELECT TERM_NO, TERM_TYPE, TERM_YN, TERM_STARTDATE, TERM_ENDDATE, TERM_RGST_BY, TERM_RGST_DATE, TERM_MDF_BY, TERM_MDF_DATE " +
+//                    "FROM TERM_MST " +
+//                    "ORDER BY TERM_RGST_DATE DESC " +
+//                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+//
+//        List<Term> terms = new ArrayList<>();
+//
+//        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
+//                pst.setInt(1, offset);
+//                pst.setInt(2, pi.getBoardLimit());
+//                ResultSet rs = pst.executeQuery();
+//                    while (rs.next()) {
+//                        Term term = new Term();
+//                        term.setNo(rs.getInt("Term_no"));
+//                        term.setType(rs.getString("Term_type"));
+//                        term.setYn(rs.getString("Term_yn"));
+//                        term.setStartDate(rs.getString("Term_startDate"));
+//                        term.setEndDate(rs.getString("Term_endDate"));
+//                        term.setRgstBy(rs.getString("Term_rgst_by"));
+//                        term.setRgstDate(rs.getString("Term_rgst_date"));
+//                        term.setMdfBy(rs.getString("Term_mdf_by"));
+//                        term.setMdfDate(rs.getString("Term_mdf_date"));
+//                        terms.add(term);
+//                    }
+//                return terms;
+//        } catch (SQLException e) {
+//            LOGGER.error("Error while fetching data from DB", e);
+//            throw new DataAccessException("Error while fetching data from DB" , e){};
+//
+//        }
+//    }
+//
+///*------------------------------------------상세 페이지-----------------------------------------*/
+//    @Override
+//    public Term findOne(int no) {
+//        String sql = "SELECT * FROM TERM_MST WHERE TERM_NO = ?";
+//        Term term = new Term();
+//
+//        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
+//                pst.setInt(1, no);
+//                ResultSet rs = pst.executeQuery();
+//
+//                if (rs.next()) {
+//                    term.setNo(rs.getInt("Term_no"));
+//                    term.setType(rs.getString("Term_type"));
+//                    term.setYn(rs.getString("Term_yn"));
+//                    term.setStartDate(rs.getString("Term_startDate"));
+//                    term.setEndDate(rs.getString("Term_endDate"));
+//                    term.setRgstBy(rs.getString("Term_rgst_by"));
+//                    term.setRgstDate(rs.getString("Term_rgst_date"));
+//                    term.setMdfBy(rs.getString("Term_mdf_by"));
+//                    term.setMdfDate(rs.getString("Term_mdf_date"));
+//                }
+//
+//                return term;
+//
+//        } catch (SQLException e) {
+//            LOGGER.error("Error while fetching data from DB", e);
+//            throw new DataAccessException("Error while fetching data from DB" , e){};
+//        }
+//    }
+//
+//    //디테일 페이지 언어 별 클릭 시 컨텐츠 가져오기 (ajax)
+//    @Override
+//    public TermDtl findConts(int no, String lang) {
+//
+//        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =? AND term_lang = ?";
+//        TermDtl termDtl = new TermDtl();
+//
+//        try (Connection conn = dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(sql);) {
+//                pst.setInt(1, no);
+//                pst.setString(2, lang);
+//                ResultSet rs = pst.executeQuery();
+//
+//                while (rs.next()) {
+//                    termDtl.setNo(rs.getInt("term_no"));
+//                    termDtl.setLang(rs.getString("term_lang"));
+//                    termDtl.setCnt(rs.getString("term_cnt"));
+//                }
+//                return termDtl;
+//        } catch (SQLException e) {
+//            throw new DataAccessException("Error while fetching data from DB" , e){};
+//        }
+//    }
 
 
     /*-------------------------------termDtl 컨텐츠 한번에 받아오기-------------------------------------*/
-    @Override
-    public List<TermDtl> findConts(int no) {
-
-        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =?";
-        List<TermDtl> list = new ArrayList<TermDtl>();
-
-        try (Connection conn = dataSource.getConnection();PreparedStatement pst = conn.prepareStatement(sql);) {
-                pst.setInt(1, no);
-                ResultSet rs = pst.executeQuery();
-
-                while (rs.next()) {
-                    TermDtl termDtl = new TermDtl();
-                    termDtl.setNo(rs.getInt("term_no"));
-                    termDtl.setLang(rs.getString("term_lang"));
-                    termDtl.setCnt(rs.getString("term_cnt"));
-                    list.add(termDtl);
-                }
-                return list;
-        } catch (SQLException e) {
-            throw new DataAccessException("Error while fetching data from DB" , e) {};
-        }
-    }
+//    @Override
+//    public List<TermDtl> findConts(int no) {
+//
+//        String sql = "SELECT * FROM TERM_DTL WHERE TERM_NO =?";
+//        List<TermDtl> list = new ArrayList<TermDtl>();
+//
+//        try (Connection conn = dataSource.getConnection();PreparedStatement pst = conn.prepareStatement(sql);) {
+//                pst.setInt(1, no);
+//                ResultSet rs = pst.executeQuery();
+//
+//                while (rs.next()) {
+//                    TermDtl termDtl = new TermDtl();
+//                    termDtl.setNo(rs.getInt("term_no"));
+//                    termDtl.setLang(rs.getString("term_lang"));
+//                    termDtl.setCnt(rs.getString("term_cnt"));
+//                    list.add(termDtl);
+//                }
+//                return list;
+//        } catch (SQLException e) {
+//            throw new DataAccessException("Error while fetching data from DB" , e) {};
+//        }
+//    }
 
     /*--------------------------------------신규 등록 (Ver. manual-commit + dataSource 적용) ----------------------------------------------*/
 
 
-        public int registerTerm(Term term) {
-            //1. Term_mst insert
-            int termNo = 0; // Term table 신규등록 후 등록번호 담는 변수
-            String insertTermSql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
-
-            Connection conn = null;
-
-            try {
-
-                conn = dataSource.getConnection();
-                conn.setAutoCommit(false);
-
-                try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"});) {
-
-
-                    pst.setString(1, term.getType());
-                    pst.setString(2, term.getYn());
-                    pst.setString(3, term.getStartDate());
-                    pst.setString(4, term.getEndDate());
-                    pst.setString(5, "이형주");
-
-                    int rs = pst.executeUpdate();
-                    if (rs > 0) {
-                        ResultSet key = pst.getGeneratedKeys();
-                        if (key.next()) {
-                            termNo = key.getInt(1);
-                        } else {
-                            throw new SQLException("termNo값 얻기 실패");
-                        }
-                    } else {
-                        throw new SQLException("Term data 등록실패");
-                    }
-
-                    conn.commit();
-                } catch (SQLException e) {
-                    if (conn != null) {
-                        try {
-                            conn.rollback();
-                        } catch (SQLException ex) {
-                            throw new DataAccessException("Error while fetching data from DB" , e) {};
-                        }
-                    }
-                }
-            } catch (SQLException ex) {
-
-            } finally {
-                    try {
-                        conn.setAutoCommit(true);
-                        conn.close();
-                    } catch (SQLException e) {
-                        throw new DataAccessException("Error while fetching data from DB" , e) {};
-                    }
-                }
-            return termNo ;
-        }
-
-
-        public int registerTermDtl (Term term, int termNo) {
-            String insertTermDtlSql = "INSERT INTO TERM_DTL (TERM_no, TERM_LANG, TERM_CNT) VALUES (?, ?, ?)";
-            int result = 0;
-
-            Connection conn = null;
-            try {
-              //  System.out.println("repositroy termDtl 등록 까지 들어오나?? 확인용");
-                    conn = dataSource.getConnection();
-                    conn.setAutoCommit(false);
-
-                try(PreparedStatement pst = conn.prepareStatement(insertTermDtlSql);) {
-
-                    for (TermDtl termDtl : term.getTermDtlList()) {
-                   //     System.out.println("repositroy 확인용 1");
-                        pst.setInt(1, termNo);
-                        pst.setString(2, termDtl.getLang());
-                        pst.setString(3, termDtl.getCnt());
-                        result += pst.executeUpdate();
-                    }
-
-                    conn.commit();
-                } catch (SQLException e) {
-                    try {
-                        if(conn != null) {
-                            conn.rollback();
-                        }
-                    } catch (SQLException ex) {
-                        throw new DataAccessException("Error while fetching data from DB" , e) {};
-                    }
-                }
-            } catch (SQLException e) {
-
-            } finally {
-                try {
-                   conn.setAutoCommit(true);
-                   conn.close();
-                } catch (SQLException e) {
-                    throw new DataAccessException("Error while fetching data from DB" , e) {};
-                }
-            }
-            return  result;
-        }
+//        public int registerTerm(Term term) {
+//            //1. Term_mst insert
+//            int termNo = 0; // Term table 신규등록 후 등록번호 담는 변수
+//            String insertTermSql = "INSERT INTO TERM_MST (term_no, term_type, term_yn, term_startDate, term_endDate, term_rgst_By, term_rgst_Date) VALUES (term_seq.nextval, ?, ?, ?, ?, ?, SYSDATE)";
+//
+//            Connection conn = null;
+//
+//            try {
+//
+//                conn = dataSource.getConnection();
+//                conn.setAutoCommit(false);
+//
+//                try (PreparedStatement pst = conn.prepareStatement(insertTermSql, new String[]{"term_no"});) {
+//
+//
+//                    pst.setString(1, term.getType());
+//                    pst.setString(2, term.getYn());
+//                    pst.setString(3, term.getStartDate());
+//                    pst.setString(4, term.getEndDate());
+//                    pst.setString(5, "이형주");
+//
+//                    int rs = pst.executeUpdate();
+//                    if (rs > 0) {
+//                        ResultSet key = pst.getGeneratedKeys();
+//                        if (key.next()) {
+//                            termNo = key.getInt(1);
+//                        } else {
+//                            throw new SQLException("termNo값 얻기 실패");
+//                        }
+//                    } else {
+//                        throw new SQLException("Term data 등록실패");
+//                    }
+//
+//                    conn.commit();
+//                } catch (SQLException e) {
+//                    if (conn != null) {
+//                        try {
+//                            conn.rollback();
+//                        } catch (SQLException ex) {
+//                            throw new DataAccessException("Error while fetching data from DB" , e) {};
+//                        }
+//                    }
+//                }
+//            } catch (SQLException ex) {
+//
+//            } finally {
+//                    try {
+//                        conn.setAutoCommit(true);
+//                        conn.close();
+//                    } catch (SQLException e) {
+//                        throw new DataAccessException("Error while fetching data from DB" , e) {};
+//                    }
+//                }
+//            return termNo ;
+//        }
+//
+//
+//        public int registerTermDtl (Term term, int termNo) {
+//            String insertTermDtlSql = "INSERT INTO TERM_DTL (TERM_no, TERM_LANG, TERM_CNT) VALUES (?, ?, ?)";
+//            int result = 0;
+//
+//            Connection conn = null;
+//            try {
+//              //  System.out.println("repositroy termDtl 등록 까지 들어오나?? 확인용");
+//                    conn = dataSource.getConnection();
+//                    conn.setAutoCommit(false);
+//
+//                try(PreparedStatement pst = conn.prepareStatement(insertTermDtlSql);) {
+//
+//                    for (TermDtl termDtl : term.getTermDtlList()) {
+//                   //     System.out.println("repositroy 확인용 1");
+//                        pst.setInt(1, termNo);
+//                        pst.setString(2, termDtl.getLang());
+//                        pst.setString(3, termDtl.getCnt());
+//                        result += pst.executeUpdate();
+//                    }
+//
+//                    conn.commit();
+//                } catch (SQLException e) {
+//                    try {
+//                        if(conn != null) {
+//                            conn.rollback();
+//                        }
+//                    } catch (SQLException ex) {
+//                        throw new DataAccessException("Error while fetching data from DB" , e) {};
+//                    }
+//                }
+//            } catch (SQLException e) {
+//
+//            } finally {
+//                try {
+//                   conn.setAutoCommit(true);
+//                   conn.close();
+//                } catch (SQLException e) {
+//                    throw new DataAccessException("Error while fetching data from DB" , e) {};
+//                }
+//            }
+//            return  result;
+//        }
 
 //    /*--------------------------------------신규 등록 (Ver. manual-commit) ----------------------------------------------*/
 //    @Override
@@ -473,100 +482,100 @@ public class JdbcTermRepository implements TermRepository {
 
 
 /*-----------------------------------------검색------------------------------------------------*/
-    @Override
-    public List<Term> search(Term term, String categoty) {
-
-        List<Term> terms = new ArrayList<>();
-        String sql = "";
-
-        if ("이용약관".equals(term.getType())|| "개인정보취급방침".equals(term.getType()) || "회원가입 동의".equals(term.getType()) || "주문동의".equals(term.getType())) { //검색 시 타입 미설정 시 "전체"로 검색
-
-            switch (categoty) {
-                case "전시 시작일" :
-                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    //sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ?";
-                    break;
-                case "등록일" :
-                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_RGST_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    break;
-                case "수정일" :
-                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    break;
-                default:
-                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')"; // 임의
-            }
-
-            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
-
-                pst.setString(1, term.getType());
-                pst.setString(2, term.getYn());
-                pst.setString(3, term.getStartDate());
-
-
-                ResultSet rs = pst.executeQuery();
-                if (rs != null) {
-                    while (rs.next()) {
-                        Term termrs = new Term();
-                        termrs.setNo(rs.getInt("Term_no"));
-                        termrs.setType(rs.getString("Term_type"));
-                        termrs.setYn(rs.getString("Term_yn"));
-                        termrs.setStartDate(rs.getString("Term_startDate"));
-                        termrs.setEndDate(rs.getString("Term_endDate"));
-                        termrs.setRgstBy(rs.getString("Term_rgst_by"));
-                        termrs.setRgstDate(rs.getString("Term_rgst_date"));
-                        termrs.setMdfBy(rs.getString("Term_mdf_by"));
-                        termrs.setMdfDate(rs.getString("Term_mdf_date"));
-                        terms.add(termrs);
-                    }
-                }
-
-                return terms;
-            } catch (SQLException e) {
-                throw new DataAccessException("Error while fetching data from DB" , e) {};
-            }
-
-        } else { // 전체 검색
-
-            switch (categoty) {
-                case "전시 시작일" :
-                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    break;
-                case "등록일" :
-                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_RGST_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    break;
-                case "수정일" :
-                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-                    break;
-                default:  sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
-            }
-
-
-            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
-
-                pst.setString(1, term.getYn());
-                pst.setString(2, term.getStartDate());
-
-                ResultSet rs = pst.executeQuery();
-                if (rs != null) {
-                    while (rs.next()) {
-                        Term termRs = new Term();
-                        termRs.setNo(rs.getInt("Term_no"));
-                        termRs.setType(rs.getString("Term_type"));
-                        termRs.setYn(rs.getString("Term_yn"));
-                        termRs.setStartDate(rs.getString("Term_startDate"));
-                        termRs.setEndDate(rs.getString("Term_endDate"));
-                        termRs.setRgstBy(rs.getString("Term_rgst_by"));
-                        termRs.setRgstDate(rs.getString("Term_rgst_date"));
-                        termRs.setMdfBy(rs.getString("Term_mdf_by"));
-                        termRs.setMdfDate(rs.getString("Term_mdf_date"));
-                        terms.add(termRs);
-                    }
-                }
-                return terms;
-            } catch (SQLException e) {
-                throw new DataAccessException("Error while fetching data from DB" , e) {};
-            }
-        }
-    }
+//    @Override
+//    public List<Term> search(Term term, String categoty) {
+//
+//        List<Term> terms = new ArrayList<>();
+//        String sql = "";
+//
+//        if ("이용약관".equals(term.getType())|| "개인정보취급방침".equals(term.getType()) || "회원가입 동의".equals(term.getType()) || "주문동의".equals(term.getType())) { //검색 시 타입 미설정 시 "전체"로 검색
+//
+//            switch (categoty) {
+//                case "전시 시작일" :
+//                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    //sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ?";
+//                    break;
+//                case "등록일" :
+//                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_RGST_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    break;
+//                case "수정일" :
+//                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    break;
+//                default:
+//                    sql = "select * from TERM_MST WHERE TERM_TYPE = ? AND TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')"; // 임의
+//            }
+//
+//            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
+//
+//                pst.setString(1, term.getType());
+//                pst.setString(2, term.getYn());
+//                pst.setString(3, term.getStartDate());
+//
+//
+//                ResultSet rs = pst.executeQuery();
+//                if (rs != null) {
+//                    while (rs.next()) {
+//                        Term termrs = new Term();
+//                        termrs.setNo(rs.getInt("Term_no"));
+//                        termrs.setType(rs.getString("Term_type"));
+//                        termrs.setYn(rs.getString("Term_yn"));
+//                        termrs.setStartDate(rs.getString("Term_startDate"));
+//                        termrs.setEndDate(rs.getString("Term_endDate"));
+//                        termrs.setRgstBy(rs.getString("Term_rgst_by"));
+//                        termrs.setRgstDate(rs.getString("Term_rgst_date"));
+//                        termrs.setMdfBy(rs.getString("Term_mdf_by"));
+//                        termrs.setMdfDate(rs.getString("Term_mdf_date"));
+//                        terms.add(termrs);
+//                    }
+//                }
+//
+//                return terms;
+//            } catch (SQLException e) {
+//                throw new DataAccessException("Error while fetching data from DB" , e) {};
+//            }
+//
+//        } else { // 전체 검색
+//
+//            switch (categoty) {
+//                case "전시 시작일" :
+//                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    break;
+//                case "등록일" :
+//                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_RGST_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    break;
+//                case "수정일" :
+//                    sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_MDF_DATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//                    break;
+//                default:  sql = "select * from TERM_MST WHERE TERM_YN = ? AND TO_DATE(TERM_STARTDATE, 'YYYY-MM-DD') >= TO_DATE(?, 'YYYY-MM-DD')";
+//            }
+//
+//
+//            try (Connection conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW); PreparedStatement pst = conn.prepareStatement(sql);) {
+//
+//                pst.setString(1, term.getYn());
+//                pst.setString(2, term.getStartDate());
+//
+//                ResultSet rs = pst.executeQuery();
+//                if (rs != null) {
+//                    while (rs.next()) {
+//                        Term termRs = new Term();
+//                        termRs.setNo(rs.getInt("Term_no"));
+//                        termRs.setType(rs.getString("Term_type"));
+//                        termRs.setYn(rs.getString("Term_yn"));
+//                        termRs.setStartDate(rs.getString("Term_startDate"));
+//                        termRs.setEndDate(rs.getString("Term_endDate"));
+//                        termRs.setRgstBy(rs.getString("Term_rgst_by"));
+//                        termRs.setRgstDate(rs.getString("Term_rgst_date"));
+//                        termRs.setMdfBy(rs.getString("Term_mdf_by"));
+//                        termRs.setMdfDate(rs.getString("Term_mdf_date"));
+//                        terms.add(termRs);
+//                    }
+//                }
+//                return terms;
+//            } catch (SQLException e) {
+//                throw new DataAccessException("Error while fetching data from DB" , e) {};
+//            }
+//        }
+//    }
 
 } //

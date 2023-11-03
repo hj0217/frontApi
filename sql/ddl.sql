@@ -15,3 +15,15 @@ CREATE TABLE TERM_DTL (
                           TERM_LANG VARCHAR2(9 CHAR) NOT NULL,
                           TERM_CNT CLOB NOT NULL
 );
+
+
+CREATE TABLE MEMBER (
+                          MEMBER_NO NUMBER(3),
+                          MEMBER_ID VARCHAR2(15) NOT NULL,
+                          MEMBER_PASSWORD VARCHAR2(33) NOT NULL
+);
+
+CREATE SEQUENCE MEMBER_SEQ
+START WITH 1  -- 시작 값, 1부터 시작하도록 설정
+INCREMENT BY 1 -- 1씩 증가
+NOCACHE; -- 시퀀스 캐싱 미사용

@@ -16,14 +16,16 @@ spring:
       connection-timeout: 30000
       connection-test-query: select * from information_schema.tables limit 1
 
+
+  mybatis:
+    config-location: classpath:mybatis-config.xml
+
 logging:
   config:
     classpath: log4j2.yaml
 
-mybatis:
-  config-location: classpath:mybatis-config.xml
 
-#  jpa:
-#    show-sql: true
-#    hibernate.ddl-auto: none
+
+
+
 

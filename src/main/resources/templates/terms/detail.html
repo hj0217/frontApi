@@ -8,7 +8,7 @@
 
 <body>
 <th:block th:insert="common/fragments :: header"></th:block>
-<input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no: 0}" th:disabled="${term != null && modify == null}"/>
+<input type="hidden" id="hiddenNo" name="no" th:value="${term != null ? term.no : 0}" th:disabled="${term != null && modify == null}"/>
 
 <div class="container">
     <h4 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h4>
@@ -118,7 +118,7 @@
                 <tr>
                     <th class="table-secondary"><span>등록자</span></th>
                     <td>
-                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getRgstBy()} :''"  th:readonly="${term != null}"/></label>
+                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getRgstBy()} : ''" th:readonly="${term != null}"/></label>
                     </td>
                     <th class="table-secondary"><span class="option">등록일시</span></th>
                     <td>
@@ -148,6 +148,9 @@
             <div class="d-grid gap-2 d-md-flex justify-content-center">
                 <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
                 <button type="button" class="btn btn-secondary" style="width: 89.8px;" th:onclick="|location.href='@{'/terms/detail/' + ${term.no} + '?modify=modify'}'|">수정</button>
+                <button type="button" class="btn btn-secondary" style="width: 89.8px" th:if="${session.loginMember != null && term != null && #strings.equals(session.loginMember.id, term.getRgstBy())}" th:onclick="|location.href='/terms/delete'|">삭제</button>
+
+
             </div>
             </th:block>
 

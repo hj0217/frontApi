@@ -1,13 +1,14 @@
 package com.demo1.demo1.service;
 
 import com.demo1.demo1.mapper.TermMapper;
+import com.demo1.demo1.vo.Member;
 import com.demo1.demo1.vo.Term;
 import com.demo1.demo1.vo.TermDtl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.demo1.demo1.vo.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -78,5 +79,11 @@ public class TermService {
             result += termMapper.updateTermDtl(termDtl);
         }
         return result;
+    }
+
+    /*------------------------------ 글 삭제  ------------------------------------*/
+    public int delete(Term term) {
+        termMapper.delete(term);
+        return 1;
     }
 }

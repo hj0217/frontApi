@@ -1,7 +1,7 @@
 package com.demo1.demo1.vo;
 
 
-import lombok.Builder;
+import com.demo1.demo1.vo.TermDtl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

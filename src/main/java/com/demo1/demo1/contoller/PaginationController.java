@@ -1,8 +1,8 @@
-package com.demo1.demo1.controller;
+package com.demo1.demo1.contoller;
 
 import com.demo1.demo1.vo.PageInfo;
 
-public class Pagination {
+public class PaginationController {
 
     public static PageInfo getPageInfo(int listCount, int currentPage, int pageLimit, int boardLimit) {
         int maxPage = (int) (Math.ceil(((double) listCount / boardLimit)));

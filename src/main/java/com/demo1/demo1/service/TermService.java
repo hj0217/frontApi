@@ -5,7 +5,6 @@ import com.demo1.demo1.vo.Member;
 import com.demo1.demo1.vo.Term;
 import com.demo1.demo1.vo.TermDtl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.demo1.demo1.vo.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,7 @@ public class TermService {
     //private final JdbcTermRepository jdbcTermRepository;
     //private final JdbcTermRepository jdbcTermRepository;
       private final TermMapper termMapper;
+
 //   @Autowired
 //    public TermService (JpaTermRepository jdbcTermRepository) {
 //        this.jdbcTermRepository = jdbcTermRepository;
@@ -82,8 +82,24 @@ public class TermService {
     }
 
     /*------------------------------ 글 삭제  ------------------------------------*/
-    public int delete(Term term) {
-        termMapper.delete(term);
+    public int delete(int no) {
+        termMapper.delete(no);
         return 1;
     }
+
+
+
+
+    /*------------------------------  회원가입  ------------------------------------*/
+    public int memberRegister(Member member) {
+        return termMapper.memberRegister(member);
+    }
+
+
+    /*------------------------------  로그인  ------------------------------------*/
+    public Member login(Member member) {
+        return termMapper.memberLogin(member);
+    }
+
+
 }

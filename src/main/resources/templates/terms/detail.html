@@ -148,7 +148,7 @@
             <div class="d-grid gap-2 d-md-flex justify-content-center">
                 <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
                 <button type="button" class="btn btn-secondary" style="width: 89.8px;" th:onclick="|location.href='@{'/terms/detail/' + ${term.no} + '?modify=modify'}'|">수정</button>
-                <button type="button" class="btn btn-secondary" style="width: 89.8px" th:if="${session.loginMember != null && term != null && #strings.equals(session.loginMember.id, term.getRgstBy())}" th:onclick="|location.href='/terms/delete'|">삭제</button>
+                <button type="button" class="btn btn-secondary" style="width: 89.8px" th:if="${session.loginMember != null && term != null && #strings.equals(session.loginMember.id, term.getRgstBy())}" onclick="deleteAction()">삭제</button>
 
 
             </div>
@@ -379,6 +379,37 @@
                 });
             }
         }
+
+
+/*-----------------------------------------데이터 삭제---------------------------------------------------*/
+
+
+    function deleteAction() {
+
+     var noData = {
+        "no": $('#hiddenNo').val()
+    };
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(noData),
+                contentType: "application/json; charset=UTF-8",
+                url: "/terms/delete",
+                success: function (result) {
+                    if(result == 'success') {
+                        alert("삭제 성공!!");
+                        location.href = '/terms/';
+                    } else {
+                        alert("삭제 실패!!");
+                        location.href = '/terms/';
+                    }
+                },
+                error: function() {
+                    alert(" 작업 오류!!! 다시 실행해 주세요!");
+                    location.href = '/terms/';
+                }
+            });
+    }
+
 
 /*-----------------------------------------공통--------------------------------------------------------*/
     // 초기페이지 국문 노출!

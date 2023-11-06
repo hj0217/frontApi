@@ -1,19 +1,13 @@
-package com.demo1.demo1.controller;
+package com.demo1.demo1.contoller;
 
-import com.demo1.demo1.vo.Member;
 import com.demo1.demo1.vo.PageInfo;
-import com.demo1.demo1.vo.Term;
 import com.demo1.demo1.service.TermService;
+import com.demo1.demo1.vo.Term;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.*;
 
 
@@ -40,11 +34,12 @@ public class TermController {
                        @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
                        Model model) {
 
+
         ////전체 게시글 구하기
         int listCount = termService.listCount();
         int pageLimit = 5;    // 보여질 페이지 수(하단 페이지 번호)
 
-        PageInfo pageInfo = Pagination.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
+        PageInfo pageInfo = PaginationController.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
 
         List<Term> terms = termService.findAll(pageInfo);
         model.addAttribute("terms", terms);
@@ -61,13 +56,13 @@ public class TermController {
                          @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
                          Term term, Model model) {
 
-        System.out.println("search  들어온 term 내용 :" + term);
+
 
         List<Term> terms = termService.search(term, searchType);
         int listCount = terms.size();
         int boardLimit = 30;
         int pageLimit = 5;    // 보여질 페이지 수(하단 페이지 번호)
-        PageInfo pageInfo = Pagination.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
+        PageInfo pageInfo = PaginationController.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
 
 
         model.addAttribute("terms", terms);
@@ -143,10 +138,21 @@ public class TermController {
         return termService.update(term);
     }
 
-    @GetMapping(value = "/delete")
-    public int delete(Term term) {
-        int result = termService.delete(term);
-        return result;
+    /*-------------------------------------- 삭제 ----------------------------------------------*/
+    @PostMapping("/delete")
+    @ResponseBody
+    public String delete(@RequestBody Term term) {
+System.out.println("====================================================================");
+System.out.println(term.getNo());
+        int result = termService.delete(term.getNo());
+            if(result > 0) {
+                System.out.println("확인용1");
+                return "success";
+            } else  {
+                System.out.println("확인용2");
+                return "failed";
+            }
+
     }
 
 }

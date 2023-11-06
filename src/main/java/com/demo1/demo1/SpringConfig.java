@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.datasource.hikari")
-@MapperScan(value= "com.demo1.demo1.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(value = "com.demo1.demo1.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
 @RequiredArgsConstructor
 public class SpringConfig {
 

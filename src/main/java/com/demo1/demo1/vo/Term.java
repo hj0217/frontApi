@@ -1,7 +1,6 @@
 package com.demo1.demo1.vo;
 
 
-import com.demo1.demo1.vo.TermDtl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,5 +23,6 @@ public class Term {
     private String mdfBy;
     private String mdfDate;
     private List<TermDtl> termDtlList;
+
 }
 

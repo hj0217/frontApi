@@ -5,9 +5,14 @@ import com.demo1.demo1.vo.Member;
 import com.demo1.demo1.vo.Term;
 import com.demo1.demo1.vo.TermDtl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.demo1.demo1.vo.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.security.auth.login.LoginException;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -15,8 +20,9 @@ import java.util.List;
 public class TermService {
 
     //private final JdbcTermRepository jdbcTermRepository;
-    //private final JdbcTermRepository jdbcTermRepository;
+
       private final TermMapper termMapper;
+      private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 //   @Autowired
 //    public TermService (JpaTermRepository jdbcTermRepository) {
@@ -47,7 +53,22 @@ public class TermService {
     }
 
     /*------------------------------ 검색 ------------------------------------*/
-    public List<Term> search(Term term, String category) { return termMapper.search(term, category); }
+    public List<Term> search(Term term, String category) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put ("category", category);
+        map.put ("type" , term.getType());
+        map.put ("yn" , term.getYn());
+        if ("전시 시작일".equals(category)) {
+            map.put("startDate", term.getStartDate());
+            map.put("endDate", term.getEndDate());
+        } else if ("등록일".equals(category)) {
+            map.put("rgstDate", term.getRgstDate());
+        } else if ("수정일".equals(category)) {
+            map.put("mdfDate", term.getMdfDate());
+        }
+
+        return termMapper.search(map);
+    }
 
     /*------------------------------ 등록  ------------------------------------*/
   /*  @Transactional
@@ -58,6 +79,7 @@ public class TermService {
 //        int termNo = jdbcTermRepository.registerTerm(term);
 //        return jdbcTermRepository.registerTermDtl(term, termNo);
 //    }
+
     @Transactional
     public int register(Term term) { // method 1개에 sql문 1개...
         int result = 0; // 저장 확인용
@@ -92,14 +114,33 @@ public class TermService {
 
     /*------------------------------  회원가입  ------------------------------------*/
     public int memberRegister(Member member) {
+        member.setPwd(bCryptPasswordEncoder.encode(member.getPwd()));
         return termMapper.memberRegister(member);
     }
 
 
     /*------------------------------  로그인  ------------------------------------*/
-    public Member login(Member member) {
-        return termMapper.memberLogin(member);
+    public Member login(Member member) throws LoginException {
+
+            boolean isPasswordMatch = bCryptPasswordEncoder.matches( member.getPwd(), termMapper.getPassword(member.getId()));
+
+System.out.println(isPasswordMatch);
+
+                if (isPasswordMatch) {
+System.out.println("확인용 서비스 성공: " + termMapper.memberLogin(member));
+System.out.println(bCryptPasswordEncoder.encode(member.getPwd()));
+
+                    member.setPwd(bCryptPasswordEncoder.encode(member.getPwd()));
+                    return termMapper.memberLogin(member);
+
+                } else {
+                    System.out.println("확인용 서비스 실패");
+                    throw new LoginException("Password does not match");
+                }
     }
 
-
+    /*------------------------------   ID 중복체크  ------------------------------------*/
+    public int idCheck(String id) {
+        return termMapper.idCheck(id);
+    }
 }

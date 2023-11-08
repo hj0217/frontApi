@@ -7,7 +7,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @Configuration
@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SpringConfig {
 
-
     @Bean
     public HikariDataSource dataSource()  {
         final HikariDataSource hikariDataSource = new HikariDataSource();
@@ -24,6 +23,11 @@ public class SpringConfig {
         hikariDataSource.setUsername("System");
         hikariDataSource.setPassword("1234");
         return hikariDataSource;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

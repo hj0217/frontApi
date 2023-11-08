@@ -28,7 +28,7 @@ public class TermController {
 //    }
 
 
-    //페이징 처리완료
+
     @GetMapping("/")
     public String home(@RequestParam(value = "boardLimit", required = false, defaultValue = "30") int boardLimit,
                        @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
@@ -53,14 +53,19 @@ public class TermController {
     /*-----------------------------------------검색 search------------------------------------------------*/
     @PostMapping("/search")
     public String search(@RequestParam(value = "type", required = false) String searchType,
+                         @RequestParam(value = "category") String category,
                          @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
                          Term term, Model model) {
 
+System.out.println(term);
+System.out.println(searchType);
+System.out.println(category);
+System.out.println(pageNum);
 
-
-        List<Term> terms = termService.search(term, searchType);
+        List<Term> terms = termService.search(term, category);
+ System.out.println("확인용1!!!!!!!!");
         int listCount = terms.size();
-        int boardLimit = 30;
+        int boardLimit = 100;
         int pageLimit = 5;    // 보여질 페이지 수(하단 페이지 번호)
         PageInfo pageInfo = PaginationController.getPageInfo(listCount, pageNum, pageLimit, boardLimit);
 
@@ -142,8 +147,7 @@ public class TermController {
     @PostMapping("/delete")
     @ResponseBody
     public String delete(@RequestBody Term term) {
-System.out.println("====================================================================");
-System.out.println(term.getNo());
+
         int result = termService.delete(term.getNo());
             if(result > 0) {
                 System.out.println("확인용1");

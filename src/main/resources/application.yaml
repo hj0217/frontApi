@@ -15,7 +15,10 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: select * from information_schema.tables limit 1
-
+#  security:
+#      user:
+#          name: user
+#          password: 1234
 
   mybatis:
     config-location: classpath:mybatis-config.xml

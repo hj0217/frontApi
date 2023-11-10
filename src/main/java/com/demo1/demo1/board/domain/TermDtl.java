@@ -1,4 +1,4 @@
-package com.demo1.demo1.vo;
+package com.demo1.demo1.board.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class TermDtl {
-
 
     private int no;
     private String lang;

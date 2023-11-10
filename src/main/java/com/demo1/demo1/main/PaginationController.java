@@ -1,6 +1,6 @@
-package com.demo1.demo1.contoller;
+package com.demo1.demo1.main;
 
-import com.demo1.demo1.vo.PageInfo;
+import com.demo1.demo1.main.domain.PageInfo;
 
 public class PaginationController {
 

@@ -3,7 +3,6 @@
 <head>
     <title>약관 등록</title>
     <th:block th:insert="common/fragments :: head"></th:block>
-
 </head>
 
 <body>
@@ -12,139 +11,139 @@
 
 <div class="container">
     <h4 class="head" id="division" th:text="${term != null ? '약관보기': '약관등록' }"></h4>
-        <div>
-            <table class="table">
-                <tbody>
-                <tr>
-                    <th class="table-secondary"><span class="option">약관유형</span></th>
-                        <td>
-                            <label for="type"></label>
-                            <select id="type" name="type" th:disabled="${term != null && modify == null}">
-                                <option value="" th:selected="${term == null}" th:disabled="${term ==null && modify == null}">----- 전체 -----</option>
-                                <option value="이용약관" th:selected="${term != null && term.getType()== '이용약관'}" th:disabled="${term != null && term.getType()== '이용약관'}">이용약관</option>
-                                <option value="개인정보취급방침" th:selected="${term != null && term.type== '개인정보취급방침'}">개인정보취급방침</option>
-                                <option value="회원가입 동의" th:selected="${term != null && term.type == '회원가입 동의'}">회원가입 동의</option>
-                                <option value="주문동의" th:selected="${term != null && term.type == '주문동의'}">주문동의</option>
-                            </select>
-                        </td>
-                        <th class="table-secondary"><span class="option">필수여부</span></th>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && modify == null && term.getYn() == 'Y' || term != null && modify == null && term.getYn() == 'N'}"/>
-                                <input type="hidden" id="_yn" name="yn" value="N"/>
-                                <label class="form-check-label" for="yn">선택</label>
-                            </div>
-                        </td>
-                </tr>
-                <tr>
-                    <th class="table-secondary"><span class="option">전시 시작일</span></th>
-                        <td>
-                            <div id="period">
-                                <label for="openToEnd"></label><input class="box"  style="width:350px" type="text" id="openToEnd" autocomplete="off" th:value="${term != null ? term.getStartDate() + '~' + term.getEndDate() : ''}" />
-                                <input type="hidden" id="startDateInput" name="startDate" th:value="${term != null ?  term.getStartDate() : ''}" />
-                                <input type="hidden" id="endDateInput" name="endDate" th:value="${term != null ?  term.getEndDate() : ''}" />
-                            </div>
-                        </td>
-                    <th class="table-secondary"><span class="option">사용여부</span></th>
-                    <td>
-                        <div>
-<!--                            <label><input type="radio" name=whether_not_use"></label>사용함-->
-<!--                            <label><input type="radio" name=whether_not_use"></label>사용안함-->
+    <div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <th class="table-secondary"><span class="option">약관유형</span></th>
+                <td>
+                    <label for="type"></label>
+                    <select id="type" name="type" th:disabled="${term != null && modify == null}">
+                        <option value="" th:selected="${term == null}" th:disabled="${term ==null && modify == null}">----- 전체 -----</option>
+                        <option value="이용약관" th:selected="${term != null && term.getType()== '이용약관'}" th:disabled="${term != null && term.getType()== '이용약관'}">이용약관</option>
+                        <option value="개인정보취급방침" th:selected="${term != null && term.type== '개인정보취급방침'}">개인정보취급방침</option>
+                        <option value="회원가입 동의" th:selected="${term != null && term.type == '회원가입 동의'}">회원가입 동의</option>
+                        <option value="주문동의" th:selected="${term != null && term.type == '주문동의'}">주문동의</option>
+                    </select>
+                </td>
+                <th class="table-secondary"><span class="option">필수여부</span></th>
+                <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="yn"  th:checked="${term != null && term.getYn() == 'Y'}" th:disabled="${term != null && modify == null && term.getYn() == 'Y' || term != null && modify == null && term.getYn() == 'N'}"/>
+                        <input type="hidden" id="_yn" name="yn" value="N"/>
+                        <label class="form-check-label" for="yn">선택</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="table-secondary"><span class="option">전시 시작일</span></th>
+                <td>
+                    <div id="period">
+                        <label for="openToEnd"></label><input class="box"  style="width:350px" type="text" id="openToEnd" autocomplete="off" th:value="${term != null ? term.getStartDate() + '~' + term.getEndDate() : ''}" />
+                        <input type="hidden" id="startDateInput" name="startDate" th:value="${term != null ?  term.getStartDate() : ''}" />
+                        <input type="hidden" id="endDateInput" name="endDate" th:value="${term != null ?  term.getEndDate() : ''}" />
+                    </div>
+                </td>
+                <th class="table-secondary"><span class="option">사용여부</span></th>
+                <td>
+                    <div>
+                        <!--                            <label><input type="radio" name=whether_not_use"></label>사용함-->
+                        <!--                            <label><input type="radio" name=whether_not_use"></label>사용안함-->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="table-secondary"><span class="option">지원언어</span></th>
+                <td colspan="3">
+                    <div style="width: 250px;">
+                        <div class="d-grid gap-2 d-md-flex justify-content-evenly">
+                            <label><input type="checkbox" id="checkboxko" class="checkbox" name="checkbox" value="ko"  th:disabled="${term != null && modify == null}"/>국문</label>
+                            <label><input type="checkbox" id="checkboxen" class="checkbox" name="checkbox" value="en"  th:disabled="${term != null && modify == null}"/>영문</label>
+                            <label><input type="checkbox" id="checkboxcn" class="checkbox" name="checkbox" value="cn"  th:disabled="${term != null && modify == null}"/>중문</label>
+                            <label><input type="checkbox" id="checkboxjp" class="checkbox" name="checkbox" value="jp"  th:disabled="${term != null && modify == null}"/>일문</label>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="table-secondary"><span class="option">지원언어</span></th>
-                    <td colspan="3">
-                        <div style="width: 250px;">
-                            <div class="d-grid gap-2 d-md-flex justify-content-evenly">
-                                <label><input type="checkbox" id="checkboxko" class="checkbox" name="checkbox" value="ko"  th:disabled="${term != null && modify == null}"/>국문</label>
-                                <label><input type="checkbox" id="checkboxen" class="checkbox" name="checkbox" value="en"  th:disabled="${term != null && modify == null}"/>영문</label>
-                                <label><input type="checkbox" id="checkboxcn" class="checkbox" name="checkbox" value="cn"  th:disabled="${term != null && modify == null}"/>중문</label>
-                                <label><input type="checkbox" id="checkboxjp" class="checkbox" name="checkbox" value="jp"  th:disabled="${term != null && modify == null}"/>일문</label>
-                            </div>
-                        </div>
-                        <div th:each="item : ${list}">
+                    </div>
+                    <div th:each="item : ${list}">
                         <input type="hidden" th:id="'hidden' + ${item.getLang()}"/>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="space">
-                    <th></th>
-                    <td></td>
-                    <th></th>
-                    <td></td>
-                </tr>
+                    </div>
+                </td>
+            </tr>
+            <tr class="space">
+                <th></th>
+                <td></td>
+                <th></th>
+                <td></td>
+            </tr>
 
-                </tbody>
+            </tbody>
 
-                <tbody>
+            <tbody>
+            <tr>
+                <th class="table-secondary"><span>약관정보</span></th>
+                <td colspan="3">
+                    <ul class="nav nav-tabs" id="liParent">
+                        <li class="nav-item"  data-lang="ko"><a class="nav-link active" aria-current="page"  id="lang-ko" th:onclick="cntControll('ko')">국문</a></li>
+                        <li class="nav-item"  data-lang="en"><a class="nav-link active" aria-current="page"  id="lang-en" th:onclick="cntControll('en')">영문</a></li>
+                        <li class="nav-item"  data-lang="cn"><a class="nav-link active" aria-current="page"  id="lang-cn" th:onclick="cntControll('cn')">중문</a></li>
+                        <li class="nav-item"  data-lang="jp"><a class="nav-link active" aria-current="page"  id="lang-jp" th:onclick="cntControll('jp')">일문</a></li>
+                    </ul>
+                </td>
+
+            </tr>
+            <tr>
+                <th class="table-secondary">약관 내용</th>
+                <td colspan="3">
+                    <div id="parentTextarea">
+                        <th:block th:each="item : ${list}">
+                            <textarea name="" th:id="'cnt-'+${item.getLang()}" class="hidden" rows="10" cols="100"  style="display:none" th:readonly="${modify == null && term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
+                        </th:block>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td></td>
+                <th></th>
+                <td></td>
+            </tr>
+            </tbody>
+            <!--            </table>-->
+            <!--        </div>-->
+
+
+            <!--        <div class="third-line">-->
+            <!--            <table class="table">-->
+            <tbody>
+            <tr>
+                <th class="table-secondary"><span>등록자</span></th>
+                <td>
+                    <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getRgstBy()} : ''" th:readonly="${term != null}"/></label>
+                </td>
+                <th class="table-secondary"><span class="option">등록일시</span></th>
+                <td>
+                    <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getStartDate()} : ''"  th:readonly="${term != null}"/></label>
+                </td>
+            </tr>
+
+            <th:block th:if="${term != null}">
                 <tr>
-                    <th class="table-secondary"><span>약관정보</span></th>
-                    <td colspan="3">
-                        <ul class="nav nav-tabs" id="liParent">
-                            <li class="nav-item"  data-lang="ko"><a class="nav-link active" aria-current="page" href="#" id="lang-ko" th:onclick="cntControll('ko')">국문</a></li>
-                            <li class="nav-item"  data-lang="en"><a class="nav-link active" aria-current="page" href="#" id="lang-en" th:onclick="cntControll('en')">영문</a></li>
-                            <li class="nav-item"  data-lang="cn"><a class="nav-link active" aria-current="page" href="#" id="lang-cn" th:onclick="cntControll('cn')">중문</a></li>
-                            <li class="nav-item"  data-lang="jp"><a class="nav-link active" aria-current="page" href="#" id="lang-jp" th:onclick="cntControll('jp')">일문</a></li>
-                        </ul>
-                    </td>
-
-                </tr>
-                <tr>
-                    <th class="table-secondary">약관 내용</th>
-                    <td colspan="3">
-                        <div id="parentTextarea">
-                            <th:block th:each="item : ${list}">
-                                    <textarea name="" th:id="'cnt-'+${item.getLang()}" class="hidden" rows="10" cols="100"  style="display:none" th:readonly="${modify == null && term != null}"> [[${term != null} ? ${item.getCnt()} : '']] </textarea>
-                            </th:block>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td></td>
-                    <th></th>
-                    <td></td>
-                </tr>
-                </tbody>
-<!--            </table>-->
-<!--        </div>-->
-
-
-<!--        <div class="third-line">-->
-<!--            <table class="table">-->
-                <tbody>
-                <tr>
-                    <th class="table-secondary"><span>등록자</span></th>
+                    <th class="table-secondary"><span class="option">수정자</span></th>
                     <td>
-                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getRgstBy()} : ''" th:readonly="${term != null}"/></label>
+                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/></label>
                     </td>
-                    <th class="table-secondary"><span class="option">등록일시</span></th>
-                    <td>
-                        <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getStartDate()} : ''"  th:readonly="${term != null}"/></label>
-                    </td>
-                </tr>
-
-                <th:block th:if="${term != null}">
-                 <tr>
-                     <th class="table-secondary"><span class="option">수정자</span></th>
-                     <td>
-                         <label><input type="text" style="border: none; outline: none;" th:value="${term != null} ? ${term.getMdfBy()} : ''"  th:readonly="${term != null}"/></label>
-                     </td>
 
                     <th class="table-secondary"><span class="option">수정일시</span></th>
                     <td>
                         <label><input type="text" style="border: none; outline: none;"  th:value="${term != null} ? ${term.getMdfDate()} : ''"  th:readonly="${term != null}"/></label>
                     </td>
-                 </tr>
-                </th:block >
-                </tbody>
-            </table>
-        </div>
+                </tr>
+            </th:block >
+            </tbody>
+        </table>
+    </div>
 
-        <div>
-            <th:block th:if="${term != null && modify == null}">
+    <div>
+        <th:block th:if="${term != null && modify == null}">
             <div class="d-grid gap-2 d-md-flex justify-content-center">
                 <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">뒤로가기</button>
                 <button type="button" class="btn btn-secondary" style="width: 89.8px;" th:onclick="|location.href='@{'/terms/detail/' + ${term.no} + '?modify=modify'}'|">수정</button>
@@ -152,22 +151,22 @@
 
 
             </div>
-            </th:block>
+        </th:block>
 
-            <th:block th:if="${term != null && modify != null}">
-                <div class="d-grid gap-2 d-md-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">취소</button>
-                    <button type="button" class="btn btn-secondary" id="updatebtn" value="update">수정완료</button>
-                </div>
-            </th:block>
+        <th:block th:if="${term != null && modify != null}">
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                <button type="button" class="btn btn-secondary me-md-2" th:onclick="|location.href='@{/terms/}'|">취소</button>
+                <button type="button" class="btn btn-secondary" id="updatebtn" value="update">수정완료</button>
+            </div>
+        </th:block>
 
-            <th:block th:if="${term == null}">
-                <div class="d-grid gap-2 d-md-flex justify-content-center">
-                    <button type="reset" class="btn btn-secondary me-md-2">초기화</button>
-                    <button type="button" class="btn btn-secondary" id="submitbtn" value="save" >저장</button>
-                </div>
-            </th:block>
-        </div>
+        <th:block th:if="${term == null}">
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                <button type="reset" class="btn btn-secondary me-md-2">초기화</button>
+                <button type="button" class="btn btn-secondary" id="submitbtn" value="save" >저장</button>
+            </div>
+        </th:block>
+    </div>
 
 </div> <!-- end of container-->
 <!--footer -->
@@ -175,310 +174,276 @@
 
 
 <script>
-/* ---------------------------------------------------------상세페이지 ----------------------------------------------------------------*/
-//(ajax 사용x) 디테일 페이지 ajax 통신 대신에 데이터 한번에 가져와서 보여줌
-    <!--언어 구분-->
-    //let hiddenNo = document.getElementById("hiddenNo");
+    /* ---------------------------------------------------------상세페이지 ----------------------------------------------------------------*/
+    //(ajax 사용x) 디테일 페이지 ajax 통신 대신에 데이터 한번에 가져와서 보여줌
+        <!--언어 구분-->
+        //let hiddenNo = document.getElementById("hiddenNo");
 
-    // $('#liParent').on('click', 'li', function () {
-    //     var selectedLang = $(this).data('lang');
-    //     var param = {'no': $('#hiddenNo').val(), 'lang': selectedLang};
-    //
-    //
-    //     $.ajax({
-    //         type: "post",
-    //         url: "/terms/lang",
-    //         contentType: "application/json; charset=utf-8",
-    //         data:
-    //
-    //             JSON.stringify(param),
-    //
-    //         dataType: "json",
-    //         success: function (result) {
-    //             if (result.cnt == null) {
-    //                 $('#cnt').text("정보 없음");
-    //             } else {
-    //                 $('#cnt').text(result.cnt);
-    //             }
-    //         },
-    //         error: function (error) {
-    //             alert(" 작업 오류!!! 다시 실행해 주세요!");
-    //             // return false;
-    //         }
-    //
-    //     });
-    // }); // end of $(liParent)
+        // $('#liParent').on('click', 'li', function () {
+        //     var selectedLang = $(this).data('lang');
+        //     var param = {'no': $('#hiddenNo').val(), 'lang': selectedLang};
+        //
+        //
+        //     $.ajax({
+        //         type: "post",
+        //         url: "/terms/lang",
+        //         contentType: "application/json; charset=utf-8",
+        //         data:
+        //
+        //             JSON.stringify(param),
+        //
+        //         dataType: "json",
+        //         success: function (result) {
+        //             if (result.cnt == null) {
+        //                 $('#cnt').text("정보 없음");
+        //             } else {
+        //                 $('#cnt').text(result.cnt);
+        //             }
+        //         },
+        //         error: function (error) {
+        //             alert(" 작업 오류!!! 다시 실행해 주세요!");
+        //             // return false;
+        //         }
+        //
+        //     });
+        // }); // end of $(liParent)
 
-/*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
+    /*---------------------------------- 디테일 페이지 : TermDtl List  ------------------------------------*/
 
-        const languages = [ ];
-        $(".checkbox").each(function () {
-           languages.push($(this).val())
-        });
+            const languages = [ ];
+            $(".checkbox").each(function () {
+               languages.push($(this).val())
+            });
 
-        for (const lang of languages) {
-            if ($(`#hidden${lang}`).length) {
-                $(`#checkbox${lang}`).prop('checked', true);
-            } else {
-                $('#parentTextarea').append(`<textarea id="cnt-${lang}" class="hidden" rows="10" cols="100"></textarea>`);
+            for (const lang of languages) {
+                if ($(`#hidden${lang}`).length) {
+                    $(`#checkbox${lang}`).prop('checked', true);
+                } else {
+                    $('#parentTextarea').append(`<textarea id="cnt-${lang}" class="hidden" rows="10" cols="100"></textarea>`);
+                }
             }
-        }
 
 
-/* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
-    //  null check
-    const isEmpty = function(value){
-        return value === "" || value == null || (typeof value == "object" && !Object.keys(value).length);
-    };
-
-    // 입력값 nullCheck 필요함!
-    function check() {
-        // 사용자 입력 값 받아오기
-        var isType = isEmpty($("#type").val());
-        //var is_yn = isEmpty($("#_yn").val());
-        var isStartDateInput = isEmpty($("#startDateInput").val());
-        var isEndDateInput = isEmpty($("#endDateInput").val());
-
-        //textarea
-        var isTextareaKo = false;
-        var isTextareaEn = false;
-        var isTextareaCn = false;
-        var isTextareaJp = false;
-
-
-        if ($('#checkboxko').prop('checked')) {
-            isTextareaKo = isEmpty($('#cnt-ko').val());
-        }
-
-        if ($('#checkboxen').prop('checked')) {
-            isTextareaEn = isEmpty($('#cnt-en').val());
-        }
-
-        if ($('#checkboxcn').prop('checked')) {
-            isTextareaCn = isEmpty($('#cnt-cn').val());
-        }
-
-        if ($('#checkboxjp').prop('checked')) {
-            isTextareaJp = isEmpty($('#cnt-jp').val());
-        }
-
-
-        var check1 = isType;
-        //var check2 = is_yn;
-        var check3 = isStartDateInput;
-        var check4 = isEndDateInput;
-        var check5 = isTextareaKo;
-        var check6 = isTextareaEn;
-        var check7 = isTextareaCn;
-        var check8  = isTextareaJp;
-
-        if (check1 || check3 || check4) {
-            alert('입력되지 않은 값이 존재합니다!');
-            return false;
-        }
-
-        return true;
-    } // end of function check()
-
-
-    //enter key 입력 --> form 제출 X
-    //비동기 Input제출 하기 때문에 엔터키 방지 필요 x
-    // $('#form').on ('keydown', evt => {
-    //     if(evt.code === "Enter" || evt.keyCode === 13) {
-    //         evt.preventDefault();
-    //     }
-    // });
-
-    //checkbox 필수여부 값보내기 (checkbox는 미선택 시 아예 값도 안넘어감.)
-    $("#yn").change(function() {
-        var c1 = $("#yn").is(":checked") ? "Y" : "N";
-        $("#_yn").val(c1);
-        if (c1 === "Y") {
-            $("label[for='yn']").text("필수");
-        } else {
-            $("label[for='yn']").text("선택");
-        }
-    });
-
- /* ---------------------------------------------- 등록/수정 페이지 -------------------------------------------*/
-    // ajax로 form 제출하기
-
-        var formData = {
-            no: '',
-            type: '',
-            yn: '',
-            startDate: '',
-            endDate: '',
-            termDtlList: []
+    /* ------------------------------------------------------------------------등록페이지 -----------------------------------------------------*/
+        //  null check
+        const isEmpty = function(value){
+            return value === "" || value == null || (typeof value == "object" && !Object.keys(value).length);
         };
 
-            // submitbtn 버튼 클릭 이벤트
-            $('#submitbtn').on ('click' , function() {
-                if(check()) {
-                    setFormData();
-                    ajaxRequest("/terms/register");
-                }
-             });
+        // 입력값 nullCheck 필요함!
+        function check() {
+            // 사용자 입력 값 받아오기
+            var isType = isEmpty($("#type").val());
+            //var is_yn = isEmpty($("#_yn").val());
+            var isStartDateInput = isEmpty($("#startDateInput").val());
+            var isEndDateInput = isEmpty($("#endDateInput").val());
 
-            // updatebtn 버튼 클릭 이벤트
-            $('#updatebtn').on('click', function () {
-                if (check()) {
-                    setFormData();
-                    ajaxRequest("/terms/update");
-                }
-            });
+            //textarea
+            var isTextareaKo = false;
+            var isTextareaEn = false;
+            var isTextareaCn = false;
+            var isTextareaJp = false;
 
-/* ---------------------------------------------- AJAX 중복코드 -------------------------------------------*/
-        function ajaxRequest(url) {
-        $.ajax({
-                type: "post",
-                data: JSON.stringify(formData),
-                contentType:"application/json; charset=UTF-8",
-                url: url,
-                dataType:'json',
-                timeout: 10000,
-                success: function (result) {
-                    if(result > 0 ) {
-                        alert("업로드 성공!!");
-                        location.href = '/terms/';
-                    } else {
-                        alert("업로드 실패!!");
+
+            if ($('#checkboxko').prop('checked')) {
+                isTextareaKo = isEmpty($('#cnt-ko').val());
+            }
+
+            if ($('#checkboxen').prop('checked')) {
+                isTextareaEn = isEmpty($('#cnt-en').val());
+            }
+
+            if ($('#checkboxcn').prop('checked')) {
+                isTextareaCn = isEmpty($('#cnt-cn').val());
+            }
+
+            if ($('#checkboxjp').prop('checked')) {
+                isTextareaJp = isEmpty($('#cnt-jp').val());
+            }
+
+
+            var check1 = isType;
+            //var check2 = is_yn;
+            var check3 = isStartDateInput;
+            var check4 = isEndDateInput;
+            var check5 = isTextareaKo;
+            var check6 = isTextareaEn;
+            var check7 = isTextareaCn;
+            var check8  = isTextareaJp;
+
+            if (check1 || check3 || check4) {
+                alert('입력되지 않은 값이 존재합니다!');
+                return false;
+            }
+
+            return true;
+        } // end of function check()
+
+
+        //enter key 입력 --> form 제출 X
+        //비동기 Input제출 하기 때문에 엔터키 방지 필요 x
+        // $('#form').on ('keydown', evt => {
+        //     if(evt.code === "Enter" || evt.keyCode === 13) {
+        //         evt.preventDefault();
+        //     }
+        // });
+
+        //checkbox 필수여부 값보내기 (checkbox는 미선택 시 아예 값도 안넘어감.)
+        $("#yn").change(function() {
+            var c1 = $("#yn").is(":checked") ? "Y" : "N";
+            $("#_yn").val(c1);
+            if (c1 === "Y") {
+                $("label[for='yn']").text("필수");
+            } else {
+                $("label[for='yn']").text("선택");
+            }
+        });
+
+     /* ---------------------------------------------- 등록/수정 페이지 -------------------------------------------*/
+        // ajax로 form 제출하기
+
+            var formData = {
+                no: '',
+                type: '',
+                yn: '',
+                startDate: '',
+                endDate: '',
+                termDtlList: []
+            };
+
+                // submitbtn 버튼 클릭 이벤트
+                $('#submitbtn').on ('click' , function() {
+                    if(check()) {
+                        setFormData();
+                        ajaxRequest("/terms/register");
+                    }
+                 });
+
+                // updatebtn 버튼 클릭 이벤트
+                $('#updatebtn').on('click', function () {
+                    if (check()) {
+                        setFormData();
+                        ajaxRequest("/terms/update");
+                    }
+                });
+
+    /* ---------------------------------------------- AJAX 중복코드 -------------------------------------------*/
+            function ajaxRequest(url) {
+            $.ajax({
+                    type: "post",
+                    data: JSON.stringify(formData),
+                    contentType:"application/json; charset=UTF-8",
+                    url: url,
+                    dataType:'json',
+                    timeout: 10000,
+                    success: function (result) {
+                        if(result > 0 ) {
+                            alert("업로드 성공!!");
+                            location.href = '/terms/';
+                        } else {
+                            alert("업로드 실패!!");
+                            location.href = '/terms/';
+                        }
+                    },
+                    error: function() {
+                        alert(" 작업 오류!!! 다시 실행해 주세요!");
                         location.href = '/terms/';
                     }
-                },
-                error: function() {
-                    alert(" 작업 오류!!! 다시 실행해 주세요!");
-                    location.href = '/terms/';
-                }
-            });
-        }
-
-         // 공통 함수로 데이터 설정
-        function setFormData() {
-            formData.no = $('#hiddenNo').val();
-            formData.type = $('#type').val();
-            formData.yn = $('#_yn').val();
-            formData.startDate = $('#startDateInput').val();
-            formData.endDate = $('#endDateInput').val();
-
-            formData.termDtlList = [];
-
-            var selectedLangArr = [];
-
-            $("input:checkbox[name=checkbox]:checked").each(function () {
-                selectedLangArr.push($(this).val());
-            });
-
-            for (const i in selectedLangArr) {
-                $("#checkbox" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].lang');
-                $("#cnt-" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].cnt');
-
-                formData.termDtlList.push({
-                    lang: selectedLangArr[i],
-                    cnt: $('#cnt-' + selectedLangArr[i]).val()
                 });
             }
+
+             // 공통 함수로 데이터 설정
+            function setFormData() {
+                formData.no = $('#hiddenNo').val();
+                formData.type = $('#type').val();
+                formData.yn = $('#_yn').val();
+                formData.startDate = $('#startDateInput').val();
+                formData.endDate = $('#endDateInput').val();
+
+                formData.termDtlList = [];
+
+                var selectedLangArr = [];
+
+                $("input:checkbox[name=checkbox]:checked").each(function () {
+                    selectedLangArr.push($(this).val());
+                });
+
+                for (const i in selectedLangArr) {
+                    $("#checkbox" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].lang');
+                    $("#cnt-" + selectedLangArr[i]).attr('name', 'termDtlList[' + i + '].cnt');
+
+                    formData.termDtlList.push({
+                        lang: selectedLangArr[i],
+                        cnt: $('#cnt-' + selectedLangArr[i]).val()
+                    });
+                }
+            }
+
+
+    /*-----------------------------------------데이터 삭제---------------------------------------------------*/
+
+
+        function deleteAction() {
+
+         var noData = {
+            "no": $('#hiddenNo').val()
+        };
+                $.ajax({
+                    type: "POST",
+                    data: JSON.stringify(noData),
+                    contentType: "application/json; charset=UTF-8",
+                    url: "/terms/delete",
+                    success: function (result) {
+                        if(result == 'success') {
+                            alert("삭제 성공!!");
+                            location.href = '/terms/';
+                        } else {
+                            alert("삭제 실패!!");
+                            location.href = '/terms/';
+                        }
+                    },
+                    error: function() {
+                        alert(" 작업 오류!!! 다시 실행해 주세요!");
+                        location.href = '/terms/';
+                    }
+                });
         }
 
 
-/*-----------------------------------------데이터 삭제---------------------------------------------------*/
+    /*-----------------------------------------공통--------------------------------------------------------*/
+        // 초기페이지 국문 노출!
+            $("#parentTextarea").find(".hidden").hide();
+            $("#cnt-ko").show();
+
+        // textarea 컨트롤
+        function cntControll (lang) {
+            $("#parentTextarea").find('.hidden').hide();
+            $("#cnt-" + lang).show();
+        }
 
 
-    function deleteAction() {
+    /* -----------------------------------------달력 --------------------------------------*/
+        var startDate= new Date();
+        var endDate = new Date();
 
-     var noData = {
-        "no": $('#hiddenNo').val()
-    };
-            $.ajax({
-                type: "POST",
-                data: JSON.stringify(noData),
-                contentType: "application/json; charset=UTF-8",
-                url: "/terms/delete",
-                success: function (result) {
-                    if(result == 'success') {
-                        alert("삭제 성공!!");
-                        location.href = '/terms/';
-                    } else {
-                        alert("삭제 실패!!");
-                        location.href = '/terms/';
-                    }
-                },
-                error: function() {
-                    alert(" 작업 오류!!! 다시 실행해 주세요!");
-                    location.href = '/terms/';
-                }
-            });
-    }
+        if ($("#startDateInput").val()) {
 
+            var startDateInput = new Date($('#startDateInput').val());
+            var years = startDateInput.getFullYear();
+            var months = (startDateInput.getMonth() + 1).toString().padStart(2, '0');
+            var days = startDateInput.getDate().toString().padStart(2, '0');
+            startDate = years + '-' + months + '-' + days;
 
-/*-----------------------------------------공통--------------------------------------------------------*/
-    // 초기페이지 국문 노출!
-        $("#parentTextarea").find(".hidden").hide();
-        $("#cnt-ko").show();
+            var endDateInput = new Date($('#endDateInput').val());
+            var yeare = endDateInput.getFullYear();
+            var monthe = (endDateInput.getMonth() + 1).toString().padStart(2, '0');
+            var daye = endDateInput.getDate().toString().padStart(2, '0');
+            endDate = yeare + '-' + monthe + '-' + daye;
 
-    // textarea 컨트롤
-    function cntControll (lang) {
-        $("#parentTextarea").find('.hidden').hide();
-        $("#cnt-" + lang).show();
-    }
+            $("#openToEnd").val(startDate + '~' + endDate ).change();
+            $("#openToEnd").prop("disabled", true);
 
-
-/* -----------------------------------------달력 --------------------------------------*/
-    var startDate= new Date();
-    var endDate = new Date();
-
-    if ($("#startDateInput").val()) {
-
-        var startDateInput = new Date($('#startDateInput').val());
-        var years = startDateInput.getFullYear();
-        var months = (startDateInput.getMonth() + 1).toString().padStart(2, '0');
-        var days = startDateInput.getDate().toString().padStart(2, '0');
-        startDate = years + '-' + months + '-' + days;
-
-        var endDateInput = new Date($('#endDateInput').val());
-        var yeare = endDateInput.getFullYear();
-        var monthe = (endDateInput.getMonth() + 1).toString().padStart(2, '0');
-        var daye = endDateInput.getDate().toString().padStart(2, '0');
-        endDate = yeare + '-' + monthe + '-' + daye;
-
-        $("#openToEnd").val(startDate + '~' + endDate ).change();
-        $("#openToEnd").prop("disabled", true);
-
-    } else {
-        startDate.setMonth(endDate.getMonth() - 1);
-
-        $(function () {
-            $('#openToEnd').daterangepicker({
-                "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " ~ ",
-                    "applyLabel": "확인",
-                    "cancelLabel": "취소",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
-                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-                    "firstDay": 1
-                },
-                "startDate": startDate.getFullYear() + '-' + ('0' + (startDate.getMonth() + 1)).slice(-2) + '-' + ('0' + startDate.getDate()).slice(-2),
-                "endDate": endDate.getFullYear() + '-' + ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + ('0' + endDate.getDate()).slice(-2),
-                "drops": "down"
-
-            }, function (start, end, label) {
-
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
-
-                $('#startDateInput').val(startDate);
-                $('#endDateInput').val(endDate);
-
-            });
-        });
-    }
-
-       if ($("#startDateInput").val() && !$('#hiddenNo').prop('disabled')) {
+        } else {
             startDate.setMonth(endDate.getMonth() - 1);
 
             $(function () {
@@ -510,8 +475,42 @@
 
                 });
             });
-            $("#openToEnd").prop("disabled", false);
-      }
+        }
+
+           if ($("#startDateInput").val() && !$('#hiddenNo').prop('disabled')) {
+                startDate.setMonth(endDate.getMonth() - 1);
+
+                $(function () {
+                    $('#openToEnd').daterangepicker({
+                        "locale": {
+                            "format": "YYYY-MM-DD",
+                            "separator": " ~ ",
+                            "applyLabel": "확인",
+                            "cancelLabel": "취소",
+                            "fromLabel": "From",
+                            "toLabel": "To",
+                            "customRangeLabel": "Custom",
+                            "weekLabel": "W",
+                            "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+                            "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+                            "firstDay": 1
+                        },
+                        "startDate": startDate.getFullYear() + '-' + ('0' + (startDate.getMonth() + 1)).slice(-2) + '-' + ('0' + startDate.getDate()).slice(-2),
+                        "endDate": endDate.getFullYear() + '-' + ('0' + (endDate.getMonth() + 1)).slice(-2) + '-' + ('0' + endDate.getDate()).slice(-2),
+                        "drops": "down"
+
+                    }, function (start, end, label) {
+
+                        startDate = start.format('YYYY-MM-DD');
+                        endDate = end.format('YYYY-MM-DD');
+
+                        $('#startDateInput').val(startDate);
+                        $('#endDateInput').val(endDate);
+
+                    });
+                });
+                $("#openToEnd").prop("disabled", false);
+          }
 
 </script>
 

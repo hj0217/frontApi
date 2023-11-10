@@ -78,7 +78,8 @@
                     </select>
                 </div>
                 <div>
-                    <a th:href="@{'/terms/detail/'}"><button type="button" class="btn btn-secondary">등록</button></a>
+                    <!--<a th:href="@{'/terms/detail/'}"><button type="button" class="btn btn-secondary">등록</button></a>-->
+                    <button type="button" class="btn btn-secondary"  onclick="goToDetailPage()">등록</button>
                 </div>
             </div>
         </div>
@@ -144,68 +145,73 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
 <script>
-//필수여부 -checkbox
-    $("#yns").change(function() {
-        var c1 = $("#yns").is(":checked") ? "Y" : "N";
-        $("#_yns").val(c1);
+//글쓰기 페이지 전환
+    function goToDetailPage() {
+       window.location.href = '/terms/detail';
+   }
 
-        if (c1 === "Y") {
-            $("label[for='yns']").text("필수");
-        } else {
-            $("label[for='yns']").text("선택");
-        }
-    });
+//필수여부 -checkbox
+   $("#yns").change(function() {
+       var c1 = $("#yns").is(":checked") ? "Y" : "N";
+       $("#_yns").val(c1);
+
+       if (c1 === "Y") {
+           $("label[for='yns']").text("필수");
+       } else {
+           $("label[for='yns']").text("선택");
+       }
+   });
 
 //검색창 초기화 버튼
 function form_reset() {
-    $("#searchForm").each(function(){
-    this.reset()});
-    $("label[for='yns']").text("선택");
-     $("#_yns").val("N");
+   $("#searchForm").each(function(){
+   this.reset()});
+   $("label[for='yns']").text("선택");
+    $("#_yns").val("N");
 }
 
 /* -----------------------------------------달력 --------------------------------------*/
-    var startDates = new Date();
-    var endDates = new Date();
+   var startDates = new Date();
+   var endDates = new Date();
 
-    startDates.setMonth(endDates.getMonth() - 1);
+   startDates.setMonth(endDates.getMonth() - 1);
 
-    $(function () {
-        $('#openToEnds').daterangepicker({
-            "locale": {
-                "format": "YYYY-MM-DD",
-                "separator": " ~ ",
-                "applyLabel": "확인",
-                "cancelLabel": "취소",
-                "fromLabel": "From",
-                "toLabel": "To",
-                "customRangeLabel": "Custom",
-                "weekLabel": "W",
-                "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
-                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-                "firstDay": 1
-            },
-            "startDate": startDates.getFullYear() + '-' + ('0' + (startDates.getMonth() + 1)).slice(-2) + '-' + ('0' + startDates.getDate()).slice(-2),
-            "endDate": endDates.getFullYear() + '-' + ('0' + (endDates.getMonth() + 1)).slice(-2) + '-' + ('0' + endDates.getDate()).slice(-2),
-            "drops": "down"
+   $(function () {
+       $('#openToEnds').daterangepicker({
+           "locale": {
+               "format": "YYYY-MM-DD",
+               "separator": " ~ ",
+               "applyLabel": "확인",
+               "cancelLabel": "취소",
+               "fromLabel": "From",
+               "toLabel": "To",
+               "customRangeLabel": "Custom",
+               "weekLabel": "W",
+               "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+               "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+               "firstDay": 1
+           },
+           "startDate": startDates.getFullYear() + '-' + ('0' + (startDates.getMonth() + 1)).slice(-2) + '-' + ('0' + startDates.getDate()).slice(-2),
+           "endDate": endDates.getFullYear() + '-' + ('0' + (endDates.getMonth() + 1)).slice(-2) + '-' + ('0' + endDates.getDate()).slice(-2),
+           "drops": "down"
 
-        }, function (start, end, label) {
+       }, function (start, end, label) {
 
-            startDates = start.format('YYYY-MM-DD');
-            endDates = end.format('YYYY-MM-DD');
+           startDates = start.format('YYYY-MM-DD');
+           endDates = end.format('YYYY-MM-DD');
 
-            $('#startDateInputs').val(startDates);
-            $('#endDateInputs').val(endDates);
+           $('#startDateInputs').val(startDates);
+           $('#endDateInputs').val(endDates);
 
-        });
-    });
+       });
+   });
 
 /* -----------------------------------------공통 --------------------------------------*/
 //출력 페이지 변경
 $('#boardLimit').change(function(){
-    var boardLimit = $(this).val();
-    var newURL = 'boardLimit=' + boardLimit;
-    location.href = '/terms/?'+ newURL;
+   var boardLimit = $(this).val();
+   var newURL = 'boardLimit=' + boardLimit;
+   location.href = '/terms/?'+ newURL;
 });
 
 

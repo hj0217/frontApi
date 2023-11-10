@@ -1,4 +1,4 @@
-package com.demo1.demo1.vo;
+package com.demo1.demo1.main.domain;
 
 import lombok.*;
 

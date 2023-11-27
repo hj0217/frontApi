@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang ="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 가입</title>
+    <th:block th:insert="common/fragments :: head"></th:block>
+</head>
+<body>
+<th:block th:insert="common/fragments :: header"></th:block>
+<div class="container">
+    <main class="form-signin w-50 m-auto">
+
+
+        <form id="form" method="post">
+           <h1 class="h3 fw-normal" style="width: 300px">Please Join us</h1>
+
+            <div class="form-floating" >
+                <input type="text" class="form-control" id="Id" placeholder="ID를 입력하세요." style="position:relative">
+                <label for="Id">ID</label>
+                <p class="errors" id="idErrorMsgLogin" style="color: red;"></p>
+                <button class="btn btn-light" onclick="idCheck()" style="position: absolute; width: 100px; height: 40px; top: 0; bottom: 0; right: 5px; margin: auto 0;">중복 확인</button>
+            </div>
+
+            <div class="form-floating">
+                <input type="password" class="form-control" id="pwd" placeholder="비밀번호를 입력하세요.">
+                <label for="pwd">Password</label>
+                <p class="errors" id="pwdErrorMsgLogin" style="color: red;"></p>
+            </div>
+
+
+            <div class="form-floating">
+                <input type="password" class="form-control" id="pwdCheck" placeholder="비밀번호를 재입력하세요.">
+                <label for="pwd">Password</label>
+                <p class="errors" id="pwdChkErrorMsgLogin" style="color: red;"></p>
+            </div>
+
+
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                <button type="reset" class="btn btn-secondary me-md-2">다시입력</button>
+                <button type="button" class="btn btn-secondary" id="registerBtn" value="update">가입하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+    //id 중복 check
+    function idCheck() {
+        $.ajax({
+            type: 'post',
+            data: JSON.stringify($('#id').val()),
+            contentType: "application/json",
+            url: "/member/idCheck",
+            dataType: "json",
+            success: function(result) {
+                if (result.status =="bad_request") {
+
+               }
+            },
+            error: function() {
+            }
+        });
+    }
+
+    $('#registerBtn').on('click', function () {
+
+      var idPwd = {
+          id: $('#id').val(),
+          pwd: $('#pwd').val()
+      };
+
+          $.ajax({
+                  type: "post",
+                  data: JSON.stringify(idPwd),
+                  contentType:"application/json; charset=UTF-8",
+                  url: "/member/memberRegister",
+                  dataType: "json",
+                  success: function (results) {
+                      if (Object.keys(results).length > 0) {
+
+                          var idMessages = "";
+                          var pwdMessages = "";
+
+                          for (var key in results) {
+                              if(results[key].field =='id'){
+                                    idMessages += results[key].message + "\n";
+                                    $('#idErrorMsg').text(idMessages);
+
+                              } else {
+                                    pwdMessages += results[key].message + "\n";
+                                     $('#pwdErrorMsg').text(pwdMessages);
+                              }
+                          }
+
+                      } else {
+                          alert("가입 성공!!");
+                          location.href = '/terms/';
+                      }
+                  },
+                error: function () {
+                  alert("작업 오류!!! 다시 실행해 주세요!");
+                }
+         });
+   });
+
+
+</script>
+<th:block th:insert="common/fragments :: footer"></th:block>
+</body>
+</html>

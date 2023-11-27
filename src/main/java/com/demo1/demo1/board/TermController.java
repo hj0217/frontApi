@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/terms")
 @RequiredArgsConstructor
 public class TermController {
@@ -20,7 +20,7 @@ public class TermController {
     //http://localhost:9090/api/v1/terms?no=205
     @GetMapping("/detail")
     public String getTerm (@RequestParam int no, Model model) {
-System.out.println("확인용1 getTerm :" + no);
+
         Term term = termService.getTerm(no);
 
         model.addAttribute("term", term);
@@ -34,7 +34,7 @@ System.out.println("확인용1 getTerm :" + no);
     //http://localhost:9090/api/v1/terms/save
     @PostMapping("/save")
     public String saveTerm (@RequestBody Term term, Model model) {
-System.out.println("확인용1 saveTerm:" + term);
+
         int result = termService.saveTerm(term);
 
         if (result >= 2) {
@@ -42,14 +42,34 @@ System.out.println("확인용1 saveTerm:" + term);
         } else {
             //오류
         }
-        return "redirect:/api/v1/main/";
+        return "redirect:/api/v1/main";
     }
 
-//    //3. 글수정(PUT)
-//    //http://localhost:9090/api/v1/terms/update
-//    @PutMapping("/update")
-//    public String updateTerm (Term term, Model model) {
-//        int result = termService.updateTerm(term);
-//        return "redirect:/api/v1/main/";
-//    }
+    //3. 글수정 (PUT)
+    //http://localhost:9090/api/v1/terms/update
+    @PutMapping("/update")
+    public String updateTerm (@RequestBody Term term, Model model) {
+
+        int result = termService.updateTerm(term);
+        return "redirect:/api/v1/main";
+    }
+
+
+    /*
+     *
+     * View 반환
+     *
+     * */
+
+    @GetMapping("write")
+    public String write (Model model) {
+
+        model.addAttribute("term", null);
+        model.addAttribute("list", null);
+        model.addAttribute("modify", null);
+
+        return "terms/detail";
+    }
+
+
 }

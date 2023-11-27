@@ -1,32 +1,77 @@
 package com.demo1.demo1.main.service;
 
-import com.demo1.demo1.feign.MainFeignClient;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
+import com.demo1.demo1.main.domain.PageInfo;
+import com.demo1.demo1.main.domain.Term;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.list;
+
+//Web Client
+/*
+ * 액티브타입의 전송과 수신(mono, flux)
+ *
+ *      << 특징 >>
+ * - 싱글 스레드 방식
+ * - non-blocking 방식
+ * - 비동기 접근 방식
+ * - JSON, XML 쉽게 응답받음
+ *
+ * */
 
 @Service
 @RequiredArgsConstructor
 public class MainService {
 
-    private final MainFeignClient mainFeignClient;
+
+    private final WebClient webClient;
 
 
-
-
-
-
-//    /*-------------------------- Total Page 구하기-------------------------*/
-//    public int listCount () {
-//        return termMapper.listCount();
+    /*-------------------------- Total Page 구하기-------------------------*/
+//    public Mono<Integer> getTotalPage () {
+//        return webClient.get()
+//                .uri("/totalPage")
+//                .retrieve()
+//                .bodyToMono(Integer.class);
+//                //ToDo
+//                //.block() 쓰면 동기방식으로 업무 처리가 되는거임?!
 //    }
-//
-//
-//    /*-------------------------메인페이지(BD데이터 List) ---------------------*/
-//    //public List<Term> findAll(){return jdbcTermRepository.findAll();}
-//    public List<Term> findAll(PageInfo pi){return termMapper.findAll(pi);}
-//
-//
+
+    /*-------------------------메인페이지(BD데이터 List) ---------------------*/
+    public List<Term> findAll(int boardLimit, int pageNum, String category, Term paramTerm) {
+System.out.println("FService 1:" + boardLimit + "," + pageNum + "," + category );
+    List<Term> list = new ArrayList<>();
+
+        String encodedCategory = URLEncoder.encode(category, StandardCharsets.UTF_8);
+
+        webClient.get()
+        .uri(builder -> builder.path("/home")
+                .queryParam("boardLimit",boardLimit)
+                .queryParam("pageNum",pageNum)
+                //.queryParam("category", encodedCategory)
+                //.queryParam("startDate", paramTerm.getStartDate())
+                //.queryParam("endDate",paramTerm.getEndDate())
+                //.queryParam("type",paramTerm.getType())
+                .build())// uriBuilder 끝
+                .retrieve()
+                .bodyToFlux(Term.class);
+                //.subscribe(list::add);
+
+        return list;
+    }
+
 //    /*-------------------------상세페이지-------------------------------------*/
 //    public Term findOne(int no) {
 //        return termMapper.findOne(no);

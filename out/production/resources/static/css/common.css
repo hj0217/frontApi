@@ -1,0 +1,14 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.checkbox label {
+    margin-right: 2px;
+}
+
+.errors {
+    color: red;
+}
